@@ -1,0 +1,28 @@
+<div class="profile-page">
+  <div class="profile-header">
+    <h1>Profile</h1>
+    <p class="text-muted">Manage your account information</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      @if (user) {
+        <div class="profile-avatar mb-3">
+          <span class="avatar-circle">{{ user.name.charAt(0) || 'A' }}</span>
+        </div>
+        <dl class="row mb-0">
+          <dt class="col-sm-3">Name</dt>
+          <dd class="col-sm-9">{{ user.name }}</dd>
+
+          <dt class="col-sm-3">Email</dt>
+          <dd class="col-sm-9">{{ user.email }}</dd>
+
+          <dt class="col-sm-3">Role</dt>
+          <dd class="col-sm-9">{{ user.role || 'User' }}</dd>
+        </dl>
+      } @else {
+        <p class="text-muted mb-0">No user data available.</p>
+      }
+    </div>
+  </div>
+</div>

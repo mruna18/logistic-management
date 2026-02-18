@@ -1,0 +1,239 @@
+<div class="pre-arrival">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="badge" [ngClass]="statusBadgeClass()">{{ status() }}</span>
+  </div>
+
+  <div *ngIf="sequenceError()" class="alert alert-danger mb-3 py-2 small">
+    {{ sequenceError() }}
+  </div>
+
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">1. Shipping Documents</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">Copy Shipping Docs Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="copyShippingDocsReceived">
+            <div class="invalid-feedback d-block" *ngIf="copyShippingDocsReceived?.invalid && copyShippingDocsReceived?.touched">
+              Required.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Original Shipping Docs Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="originalShippingDocsReceived">
+            <div class="invalid-feedback d-block" *ngIf="originalShippingDocsReceived?.invalid && originalShippingDocsReceived?.touched">
+              <span *ngIf="originalShippingDocsReceived?.errors?.['required']">Required when payment mode is LC.</span>
+              <span *ngIf="originalShippingDocsReceived?.errors?.['originalBeforeCopy']">Cannot be before copy date.</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Copy BL Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="copyBLReceived">
+            <div class="invalid-feedback d-block" *ngIf="copyBLReceived?.invalid && copyBLReceived?.touched">
+              Required.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Original BL Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="originalBLReceived">
+            <div class="invalid-feedback d-block" *ngIf="originalBLReceived?.errors?.['originalBeforeCopy'] && originalBLReceived?.touched">
+              Cannot be before copy BL date.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">BL No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="blNo" placeholder="BL Number">
+            <div class="invalid-feedback d-block" *ngIf="blNo?.invalid && blNo?.touched">
+              Required before PAAR application.
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">ETA</label>
+            <input type="date" class="form-control form-control-sm" formControlName="eta">
+            <small class="text-muted" *ngIf="autoEta">Auto from Origin/Terminal</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line</label>
+            <input type="text" class="form-control form-control-sm" formControlName="shippingLineDisplay" placeholder="Auto from Origin/Terminal" readonly>
+            <small class="text-muted">Auto-filled from Origin or Terminal</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Terminal Name</label>
+            <input type="text" class="form-control form-control-sm" formControlName="terminalNameDisplay" placeholder="Auto from Terminal" readonly>
+            <small class="text-muted">Auto-filled from Terminal</small>
+          </div>
+        </div>
+        <div *ngIf="copyShippingDocsReceived?.invalid || copyBLReceived?.invalid || blNo?.invalid" class="mt-1 small text-danger">
+          Section validation: Complete all required fields.
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">2. PAAR Process</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">PAAR Applied Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="paarAppliedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Draft PAAR Received Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="draftPaarReceivedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Consignment No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="consignmentNo">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PAAR Validated Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="paarValidatedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PAAR Process Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="paarProcessDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PAAR Received Date</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="date" class="form-control form-control-sm flex-grow-1" formControlName="paarReceivedDate">
+              <span *ngIf="showPaarDelayBadge()" class="badge" [ngClass]="paarDelayBadgeClass()">{{ paarDelayText() }}</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PAAR Amendment Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="paarAmendmentDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PAAR No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="paarNo">
+          </div>
+          <div class="col-12">
+            <label class="form-label small">PAAR Remarks</label>
+            <textarea class="form-control form-control-sm" formControlName="paarRemarks" rows="2"></textarea>
+            <div class="invalid-feedback d-block" *ngIf="paarRemarks?.invalid && paarRemarks?.touched">
+              Required when amendment date is entered.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">3. ETA &amp; IDEC</h6>
+      </div>
+      <div class="card-body p-2">
+        <div *ngIf="showEtaWarning()" class="alert alert-danger py-2 mb-2 small">
+          ETA is before ATD. Please verify.
+        </div>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">ETA</label>
+            <input type="date" class="form-control form-control-sm" formControlName="eta">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">IDEC Applicable</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="idecApplicable" id="idecApplicable">
+              <label class="form-check-label small" for="idecApplicable">Yes</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">IDEC Response Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="idecResponseDate">
+            <div class="invalid-feedback d-block" *ngIf="idecResponseDate?.invalid && idecResponseDate?.touched">
+              Required when IDEC is applicable.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Special Duty Waiver</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="specialDutyWaiver" id="specialDutyWaiver">
+              <label class="form-check-label small" for="specialDutyWaiver">Yes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">4. Terminal &amp; Command Details</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Rotation No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="rotationNo">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Terminal Code</label>
+            <input type="text" class="form-control form-control-sm" formControlName="terminalCode">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Command Code</label>
+            <input type="text" class="form-control form-control-sm" formControlName="commandCode">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">5. Duty Assessment</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">Duty Draft Assessed Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dutyDraftAssessedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Draft Sent Date</label>
+            <input type="text" class="form-control form-control-sm" formControlName="dutyDraftSentDate" readonly placeholder="Auto">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Draft Approved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dutyDraftApprovedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Final Processed Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dutyFinalProcessedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Final Sent Date</label>
+            <input type="text" class="form-control form-control-sm" formControlName="dutyFinalSentDate" readonly placeholder="Auto">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Paid By</label>
+            <select class="form-select form-select-sm" formControlName="dutyPaidBy">
+              <option *ngFor="let opt of dutyPaidByOptions; trackBy: trackByIndex" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Paid Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="dutyPaidDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Duty Receipt Received Date</label>
+            <input type="text" class="form-control form-control-sm" formControlName="dutyReceiptReceivedDate" readonly placeholder="Auto">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">C No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="cNo">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid">Save</button>
+    </div>
+  </form>
+</div>

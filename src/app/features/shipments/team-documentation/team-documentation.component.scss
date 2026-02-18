@@ -1,0 +1,18 @@
+.team-doc-card {
+  margin-bottom: 1rem;
+}
+
+.team-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.team-doc-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+

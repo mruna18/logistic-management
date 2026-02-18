@@ -1,0 +1,228 @@
+<div class="export-transport-stuffing">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold small">3. Transportation & Stuffing</h6>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addContainer()" [disabled]="form.disabled">+ Add Container</button>
+      </div>
+      <div class="card-body p-2">
+        <h6 class="fw-semibold small text-muted mb-2">File Level</h6>
+        <div class="row g-2 mb-3">
+          <div class="col-md-3">
+            <label class="form-label small">Stuffing Projected</label>
+            <input type="date" class="form-control form-control-sm" formControlName="stuffingProjected">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Shipping Line</label>
+            <select class="form-select form-select-sm" formControlName="shippingLine">
+              <option value="">— Select —</option>
+              <option *ngFor="let s of shippingLines" [value]="s">{{ s }}</option>
+            </select>
+            <small class="text-muted">Passed to Terminal & Shipping (Window 5)</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Container Type</label>
+            <select class="form-select form-select-sm" formControlName="containerType">
+              <option value="">—</option>
+              <option *ngFor="let t of containerTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Stuffing Address</label>
+            <input type="text" class="form-control form-control-sm" formControlName="stuffingAddress" placeholder="From client">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Transporter(s) Allocated</label>
+            <select multiple class="form-select form-select-sm" formControlName="transportersAllocated">
+              <option *ngFor="let t of transporters" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Indemnity</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="indemnityApplicable">
+              <label class="form-check-label small">Applicable (Triangulation)</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Indemnity Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="indemnityReceivedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Complete Docs to Invoicing</label>
+            <input type="date" class="form-control form-control-sm" formControlName="docsSubmittedToInvoicingDate">
+          </div>
+        </div>
+        <h6 class="fw-semibold small text-muted mb-2">Auto Derived Dates (from container level)</h6>
+        <div class="row g-2 mb-2">
+          <div class="col-md-3">
+            <label class="form-label small">First Empty Loaded Out</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="firstEmptyLoadedOut" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Empty Loaded Out</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastEmptyLoadedOut" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Empty Delivered to Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="firstEmptyDeliveredToClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Empty Delivered to Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastEmptyDeliveredToClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Empty Stuffed at Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="firstEmptyStuffedAtClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Empty Stuffed at Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastEmptyStuffedAtClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Stuffed Departed from Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="firstStuffedDepartedFromClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Stuffed Departed from Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastStuffedDepartedFromClient" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Stuffed Gated In POL</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="firstStuffedGatedInPol" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Stuffed Gated In POL</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastStuffedGatedInPol" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Complete Waybills Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="completeWaybillsReceived" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Complete EIR Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="completeEirReceived" readonly>
+          </div>
+        </div>
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Container Level — Planning & Waybill Printing</h6>
+        <div formArrayName="containers">
+          <div *ngFor="let ctrl of containers.controls; let i = index" [formGroupName]="i" class="border rounded p-2 mb-2">
+            <div (click)="toggleRow(i)" class="d-flex justify-content-between align-items-center cursor-pointer">
+              <span class="fw-medium">{{ ctrl.get('containerNumber')?.value || '—' }}</span>
+              <span>{{ isExpanded(i) ? '▼' : '▶' }}</span>
+            </div>
+            <div *ngIf="isExpanded(i)" class="row g-2 mt-2">
+              <div class="col-md-3">
+                <label class="form-label small">Container No</label>
+                <input type="text" class="form-control form-control-sm" formControlName="containerNumber" placeholder="e.g. MSCU1234567">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Transporter(s)</label>
+                <select multiple class="form-select form-select-sm" formControlName="transporterNames">
+                  <option *ngFor="let t of transporters" [value]="t">{{ t }}</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small">Allocation Date</label>
+                <input type="date" class="form-control form-control-sm" formControlName="allocationDate">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Allocation to Transporter</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="allocationToTransporterDateTime">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Stuffing Location Address</label>
+                <input type="text" class="form-control form-control-sm" formControlName="stuffingLocationAddress">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Mode</label>
+                <select class="form-select form-select-sm" formControlName="mode">
+                  <option *ngFor="let m of modeOptions" [value]="m">{{ m }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Truck Gated In Empty Yard</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="truckGatedInEmptyYardDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Empty Loaded in Terminal</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="emptyLoadedInTerminalDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Empty Gated Out of Terminal</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="emptyGatedOutOfTerminalDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Empty Arrived at Delivery Location</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="emptyArrivedAtDeliveryLocationDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Stuffing Started</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="stuffingStartedDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Stuffing Complete</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="stuffingCompleteDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Signed Waybill Received</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="signedWaybillReceivedDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Stuffed Gate Out from Warehouse</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="stuffedGateOutFromWarehouseDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Stuffed Gated In POL — Location</label>
+                <input type="text" class="form-control form-control-sm" formControlName="stuffedGatedInPolLocation" placeholder="Name of location">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Stuffed Gated In POL — Date/Time</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="stuffedGatedInPolDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">EIR Received</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="eirReceivedDateTime">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Waybill & EIR to Invoicing</label>
+                <input type="datetime-local" class="form-control form-control-sm" formControlName="waybillEirSubmittedToInvoicingDateTime">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small">Demurrage</label>
+                <div class="form-check mt-2">
+                  <input type="checkbox" class="form-check-input" formControlName="demurrageCharged">
+                  <label class="form-check-label small">Charged</label>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small">Demurrage Days</label>
+                <input type="number" min="0" class="form-control form-control-sm" formControlName="demurrageDays">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Demurrage Reason</label>
+                <input type="text" class="form-control form-control-sm" formControlName="demurrageReason" placeholder="Remarks">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small">Debit to Transporter</label>
+                <div class="form-check mt-2">
+                  <input type="checkbox" class="form-check-input" formControlName="debitToTransporter">
+                  <label class="form-check-label small">Yes</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Debit to Transporter Reasons</label>
+                <input type="text" class="form-control form-control-sm" formControlName="debitToTransporterReasons" placeholder="Remarks">
+              </div>
+              <div class="col-12">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeContainer(i)">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="containers.length === 0" class="text-muted small py-2">No containers. Click + Add Container.</div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.disabled">Save</button>
+  </form>
+</div>

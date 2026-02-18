@@ -1,0 +1,135 @@
+<div class="container-fluid p-3 bg-light min-vh-100" *ngIf="shipment() as s">
+  <app-shipment-header [shipment]="s"></app-shipment-header>
+
+  <app-shipment-status-tracker *ngIf="!isExportShipment()" [currentStep]="getCurrentStep(s)"></app-shipment-status-tracker>
+
+  @if (isExportShipment()) {
+    <app-export-shipment-detail
+      [shipmentId]="getShipmentId()"
+      [shipmentNo]="s.shipmentNo"
+      [clientName]="s.clientName"
+      [orderReference]="s.orderReference"
+      [disabled]="isFormDisabled()">
+    </app-export-shipment-detail>
+  } @else {
+  <div class="mb-2">
+    <div *ngIf="transitionError()" class="alert alert-danger py-2 mb-2 small">
+      {{ transitionError() }}
+    </div>
+    <div class="d-flex justify-content-between align-items-center">
+      <span *ngIf="!transitionError() && stateContext()?.nextRequiredWindow" class="text-muted small">
+        Next: {{ stateContext()?.nextRequiredWindow }}
+      </span>
+      <button type="button" class="btn btn-primary btn-sm ms-auto" (click)="saveAll()">Save All</button>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs nav-tabs-sm mb-2" role="tablist">
+    <li class="nav-item" *ngFor="let tab of tabs; trackBy: trackByTab" role="presentation">
+      <button
+        type="button"
+        class="nav-link py-1 px-3 small fw-semibold"
+        [class.active]="activeTab() === tab"
+        [class.disabled]="isTabLocked(tab)"
+        [title]="isTabLocked(tab) ? 'Complete previous steps first' : ''"
+        (click)="setActiveTab(tab)">
+        {{ tab }}
+        <span *ngIf="isTabLocked(tab)" class="ms-1">&#128274;</span>
+      </button>
+    </li>
+  </ul>
+
+  <div class="row g-3">
+    <div class="col-lg-9">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-3">
+          @switch (activeTab()) {
+            @case ('Overview') {
+              <app-shipment-dashboard-summary [shipment]="s"></app-shipment-dashboard-summary>
+            }
+            @case ('Origin Details') {
+              <app-origin-details
+                [formMApprovalDate]="s.formMApprovedDate"
+                [initialValue]="s.originDetails"
+                [disabled]="isFormDisabled()"
+                (save)="onOriginDetailsSave($event)">
+              </app-origin-details>
+            }
+            @case ('Pre Arrival') {
+              <app-pre-arrival
+                [paymentMode]="s.paymentMode"
+                [atd]="s.originDetails?.atd ?? null"
+                [initialValue]="s.preArrival"
+                [disabled]="isFormDisabled()"
+                (save)="onPreArrivalSave($event)">
+              </app-pre-arrival>
+            }
+            @case ('Terminal & Shipping') {
+              <app-terminal-shipping
+                [initialValue]="s.terminalShipping"
+                [transportData]="getTransportData(s)"
+                [disabled]="isFormDisabled()"
+                (save)="onTerminalShippingSave($event)">
+              </app-terminal-shipping>
+            }
+            @case ('Customs & Regulatory') {
+              <app-customs-regulatory
+                [initialValue]="s.customsRegulatory"
+                [dutyReceiptReceivedDate]="s.preArrival?.dutyReceiptReceivedDate ?? null"
+                [disabled]="isFormDisabled()"
+                (save)="onCustomsRegulatorySave($event)">
+              </app-customs-regulatory>
+            }
+            @case ('Transport & Delivery') {
+              <app-transport-delivery
+                [initialValue]="s.transportDelivery"
+                [terminalData]="getTransportTerminalData(s)"
+                [disabled]="isFormDisabled()"
+                (save)="onTransportDeliverySave($event)">
+              </app-transport-delivery>
+            }
+            @case ('Team & Documentation') {
+              <app-team-documentation
+                [initialValue]="getTeamDocumentation(s)"
+                [disabled]="isFormDisabled()"
+                (save)="onTeamDocumentationSave($any($event))">
+              </app-team-documentation>
+            }
+            @case ('Performance Matrix') {
+              <app-performance-control-matrix
+                [initialValue]="s.performanceControlStages ?? null"
+                [shipmentData]="getPerformanceMatrixShipmentData(s)"
+                [disabled]="isFormDisabled()"
+                (save)="onPerformanceMatrixSave($event)">
+              </app-performance-control-matrix>
+            }
+            @case ('Bank Closure') {
+              <app-bank-closure
+                [initialValue]="getBankClosureData(s)"
+                [fecdSubmittedToBankDate]="s.customsRegulatory?.fecdSubmittedToBankDate ?? null"
+                [disabled]="isFormDisabled()"
+                (save)="onBankClosureSave($event)">
+              </app-bank-closure>
+            }
+            @case ('Documents') {
+              <app-shipment-documents
+                [documents]="documents()"
+                [disabled]="isFormDisabled()">
+              </app-shipment-documents>
+            }
+            @case ('Activity Log') {
+              <div class="shipment-activity-full">
+                <h6 class="fw-semibold small mb-3">Activity Timeline</h6>
+                <app-activity-log-panel [activities]="activities()" panelId="activityLogTab"></app-activity-log-panel>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <app-activity-log-panel [activities]="activities()" panelId="activityLogSidebar"></app-activity-log-panel>
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,255 @@
+<!-- UI Reference Page -->
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">UI Components Reference</h1>
+      <p class="text-lg text-gray-600">A collection of reusable UI components for the project</p>
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Buttons</h2>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Primary Button -->
+          <button class="bg-primary hover:bg-primary-hover text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Primary Button
+          </button>
+          
+          <!-- Secondary Button -->
+          <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md transition-colors">
+            Secondary Button
+          </button>
+          
+          <!-- Success Button -->
+          <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Success Button
+          </button>
+          
+          <!-- Danger Button -->
+          <button class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Danger Button
+          </button>
+          
+          <!-- Outline Button -->
+          <button class="border border-primary text-primary hover:bg-purple-50 font-medium py-2 px-4 rounded-md transition-colors">
+            Outline Button
+          </button>
+          
+          <!-- Disabled Button -->
+          <button disabled class="bg-gray-300 text-gray-500 font-medium py-2 px-4 rounded-md cursor-not-allowed">
+            Disabled Button
+          </button>
+          
+          <!-- Small Button -->
+          <button class="bg-primary hover:bg-primary-hover text-white text-sm font-medium py-1 px-3 rounded-md transition-colors">
+            Small Button
+          </button>
+          
+          <!-- Large Button -->
+          <button class="bg-primary hover:bg-primary-hover text-white text-lg font-medium py-3 px-6 rounded-md transition-colors">
+            Large Button
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Elements Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Form Elements</h2>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Text Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Text Input</label>
+            <input type="text" placeholder="Enter text here" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+          
+          <!-- Email Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email Input</label>
+            <input type="email" placeholder="Enter email" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+          
+          <!-- Password Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Password Input</label>
+            <input type="password" placeholder="Enter password" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+          
+          <!-- Select Dropdown -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select Dropdown</label>
+            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option>Choose an option</option>
+              <option>Option 1</option>
+              <option>Option 2</option>
+              <option>Option 3</option>
+            </select>
+          </div>
+          
+          <!-- Textarea -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Textarea</label>
+            <textarea rows="4" placeholder="Enter your message" 
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+          </div>
+          
+          <!-- Checkbox -->
+          <div>
+            <label class="flex items-center">
+              <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <span class="ml-2 text-sm text-gray-700">Checkbox option</span>
+            </label>
+          </div>
+          
+          <!-- Radio Buttons -->
+          <div>
+            <fieldset>
+              <legend class="text-sm font-medium text-gray-700 mb-2">Radio Options</legend>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="radio" name="radio-group" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                  <span class="ml-2 text-sm text-gray-700">Option 1</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="radio-group" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                  <span class="ml-2 text-sm text-gray-700">Option 2</span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Cards</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Basic Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Basic Card</h3>
+          <p class="text-gray-600 mb-4">This is a basic card component with some content.</p>
+          <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Action Button
+          </button>
+        </div>
+        
+        <!-- Card with Image -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="h-32 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Card with Image</h3>
+            <p class="text-gray-600 mb-4">This card has a gradient background image.</p>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+              View Details
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+              <p class="text-2xl font-semibold text-gray-900">$45,231</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Alerts</h2>
+      <div class="space-y-4">
+        <!-- Success Alert -->
+        <div class="bg-green-50 border border-green-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-green-800">Success! Your action was completed successfully.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Warning Alert -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-yellow-800">Warning! Please review your input before proceeding.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Error Alert -->
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-red-800">Error! Something went wrong. Please try again.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Info Alert -->
+        <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-blue-800">Info! Here's some helpful information for you.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-6">Badges & Tags</h2>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex flex-wrap gap-3">
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Default</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Success</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Warning</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Error</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">Purple</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Gray</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">Indigo</span>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-pink-100 text-pink-800">Pink</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

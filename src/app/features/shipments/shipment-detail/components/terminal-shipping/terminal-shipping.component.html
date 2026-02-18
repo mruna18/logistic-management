@@ -1,0 +1,270 @@
+<div class="terminal-shipping">
+  <form [formGroup]="form">
+    @if (terminalFreeDaysExpired() || shippingFreeDaysExpired()) {
+      <div class="alert alert-danger py-2 mb-3 small d-flex align-items-center gap-2">
+        <span>⚠</span>
+        <div>
+          <strong>Free Days Expired – Demurrage/Detention Exposure</strong>
+          @if (terminalFreeDaysExpired()) {
+            <span class="d-block">Terminal: {{ terminalDaysOverdue() }} day(s) over free period. Gate out pending.</span>
+          }
+          @if (shippingFreeDaysExpired()) {
+            <span class="d-block">Shipping: {{ shippingDaysOverdue() }} day(s) over free period. Empty return pending.</span>
+          }
+        </div>
+      </div>
+    }
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">1. Terminal</h6>
+      </div>
+      <div class="card-body p-2">
+        <h6 class="fw-semibold small text-muted mb-2">Arrival</h6>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">ATA</label>
+            <input type="date" class="form-control form-control-sm" formControlName="ata">
+            <div class="invalid-feedback d-block" *ngIf="ata?.invalid && ata?.touched">Required.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Terminal Name</label>
+            <select class="form-select form-select-sm" formControlName="terminalName">
+              <option value="">-- Select terminal --</option>
+              <option *ngFor="let t of terminalNames; trackBy: trackByIndex" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Bonded</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="bondedApplicable" id="bondedApplicable">
+              <label class="form-check-label small" for="bondedApplicable">Applicable</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Bonded Terminal</label>
+            <select class="form-select form-select-sm" formControlName="bondedTerminalName">
+              <option value="">-- Select --</option>
+              <option *ngFor="let t of bondedTerminals; trackBy: trackByIndex" [value]="t">{{ t }}</option>
+            </select>
+            <div class="invalid-feedback d-block" *ngIf="bondedTerminalName?.invalid && bondedTerminalName?.touched">Required when bonded applicable.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Bonded Transfer Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="bondedTransferDate">
+            <div class="invalid-feedback d-block" *ngIf="bondedTransferDate?.invalid && bondedTransferDate?.touched">Required when bonded applicable.</div>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3 d-flex align-items-center justify-content-between">
+          <span>Terminal DN</span>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" (click)="showAdditionalTerminalDn = !showAdditionalTerminalDn" [title]="showAdditionalTerminalDn ? 'Hide' : 'Add more DN dates'">+</button>
+        </h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Terminal DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalDnReceived">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Terminal DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalDnPaid">
+            <div class="invalid-feedback d-block" *ngIf="form.get('terminalDnPaid')?.errors?.['dateBefore']">Cannot be before DN Received.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Terminal Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalValidTill">
+            <small class="text-muted d-block">Typically 4 days free from container landed</small>
+          </div>
+        </div>
+        <div class="row g-2 mt-1" *ngIf="showAdditionalTerminalDn">
+          <div class="col-md-4">
+            <label class="form-label small">DN 2 Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnReceived">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">DN 2 Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnPaid">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Valid Till 2</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalValidTill">
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Examination</h6>
+        <div class="row g-2">
+          <div class="col-md-2">
+            <label class="form-label small">Applicable</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="examinationApplicable" id="examinationApplicable">
+              <label class="form-check-label small" for="examinationApplicable">Yes</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Examination Booked</label>
+            <input type="date" class="form-control form-control-sm" formControlName="examinationBooked">
+            <div class="invalid-feedback d-block" *ngIf="examinationBooked?.invalid && examinationBooked?.touched">Required when examination applicable.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Examination Done</label>
+            <input type="date" class="form-control form-control-sm" formControlName="examinationDone">
+            <div class="invalid-feedback d-block" *ngIf="examinationDone?.invalid && examinationDone?.touched">
+              <span *ngIf="examinationDone?.errors?.['required']">Required when examination applicable.</span>
+              <span *ngIf="examinationDone?.errors?.['examinationDoneBeforeBooked']">Cannot be before examination booked.</span>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">TDO &amp; Loading</h6>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">TDO Projected</label>
+            <input type="date" class="form-control form-control-sm" formControlName="tdoProjected">
+            <small class="text-muted d-block">Auto: Duty receipt + 3 days (from Customs)</small>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">TDO Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="tdoReceived">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Container Loaded Out</label>
+            <input type="date" class="form-control form-control-sm" formControlName="lastContainerLoadedOut">
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Refund</h6>
+        <div class="row g-2 align-items-end">
+          <div class="col-md-2">
+            <label class="form-label small">Refund Applicable <span class="text-danger">*</span></label>
+            <select class="form-select form-select-sm" formControlName="refundApplicable">
+              <option [ngValue]="false">No</option>
+              <option [ngValue]="true">Yes</option>
+            </select>
+            <small class="d-block text-muted mt-1">Terminal validity vs last container loaded out</small>
+          </div>
+          <ng-container *ngIf="form.get('refundApplicable')?.value === true">
+            <div class="col-md-3">
+              <label class="form-label small">Refund Applied Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control form-control-sm" formControlName="refundAppliedDate">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Refund Acknowledgement Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control form-control-sm" formControlName="refundAcknowledgementDate">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Copy Type</label>
+              <select class="form-select form-select-sm" formControlName="refundCopyType">
+                <option value="">-- Select --</option>
+                <option *ngFor="let t of refundCopyTypes; trackBy: trackByIndex" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">2. Shipping Line</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">Shipping Line</label>
+            <select class="form-select form-select-sm" formControlName="shippingLine">
+              <option value="">-- Select shipping line --</option>
+              <option *ngFor="let s of shippingLines; trackBy: trackByIndex" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Vessel Name</label>
+            <input type="text" class="form-control form-control-sm" formControlName="vesselName">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">BL No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="blNo" placeholder="From above (Pre Arrival)">
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-md-3">
+            <label class="form-label small">Shipping Line DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingDnReceived">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Shipping Line DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingDnPaid">
+            <div class="invalid-feedback d-block" *ngIf="form.get('shippingDnPaid')?.errors?.['dateBefore']">Cannot be before DN Received.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line DN Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingValidTill">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Free Days</label>
+            <input type="number" min="0" class="form-control form-control-sm" formControlName="freeDays" placeholder="14">
+            <small class="text-muted d-block">Typically 14 days from arrival</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">DO Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="doReceived">
+            <div class="invalid-feedback d-block" *ngIf="doReceived?.errors?.['doBeforeDnPaid']">Only allowed after Shipping DN Paid.</div>
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-md-4">
+            <label class="form-label small">Shipping DN 2 Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnReceived">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Shipping DN 2 Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnPaid">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Shipping Valid Till 2</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingValidTill">
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-md-3">
+            <label class="form-label small">Last Empty Return</label>
+            <input type="date" class="form-control form-control-sm" formControlName="lastEmptyReturn">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Refund Applicable</label>
+            <span class="badge" [ngClass]="shippingRefundBadgeClass()">{{ shippingRefundApplicable() ? 'Yes' : 'No' }}</span>
+            <small class="d-block text-muted mt-1">Shipping validity vs last empty return</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Final Invoice to be Processed</label>
+            <span class="badge" [ngClass]="finalInvoiceBadgeClass()">{{ finalInvoiceToBeProcessed() ? 'Yes' : 'No' }}</span>
+            <small class="d-block text-muted mt-1">Shipping validity vs last empty return</small>
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-md-3">
+            <label class="form-label small">Refund Applied</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingRefundAppliedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Refund Acknowledgement Copy</label>
+            <select class="form-select form-select-sm" formControlName="shippingRefundAckCopyType">
+              <option value="">-- Select --</option>
+              <option *ngFor="let t of refundCopyTypes; trackBy: trackByIndex" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Refund Acknowledgement Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingRefundAckDate">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid || form.disabled">Save</button>
+    </div>
+  </form>
+</div>

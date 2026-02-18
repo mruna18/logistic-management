@@ -1,0 +1,131 @@
+<div class="export-team-documentation">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">2. Team & Documentation</h6>
+      </div>
+      <div class="card-body p-2">
+        <h6 class="fw-semibold small text-muted mb-2">Team</h6>
+        <div class="row g-2 mb-3">
+          <div class="col-md-4">
+            <label class="form-label small">Sales</label>
+            <input type="text" class="form-control form-control-sm" formControlName="salesOwner" placeholder="Name">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Customer Service</label>
+            <input type="text" class="form-control form-control-sm" formControlName="customerServiceOwner" placeholder="Name">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Clearing Agent</label>
+            <input type="text" class="form-control form-control-sm" formControlName="clearingAgent" placeholder="Name">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Complete File Close & Submitted for Invoicing</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fileCloseSubmittedForInvoicingDate">
+            <small class="text-muted">TRIGGER: Only after final export documentation completed</small>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2">Initial Documentation & Planning</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Required</th>
+                <th>No.</th>
+                <th>Date Processed</th>
+                <th>Date Received</th>
+                <th>Processed By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NXP</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="nxpRequired"></td>
+                <td><input type="text" class="form-control form-control-sm" formControlName="nxpNo" placeholder="NXP No"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="nxpDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="nxpDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="nxpProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Booking</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="bookingRequired"></td>
+                <td><input type="text" class="form-control form-control-sm" formControlName="bookingNo" placeholder="Booking No"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="bookingDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="bookingDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="bookingProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Shipping Line</td>
+                <td colspan="5">
+                  <input type="text" class="form-control form-control-sm" formControlName="shippingLineName" placeholder="Shipping line name">
+                </td>
+              </tr>
+              <tr>
+                <td>Equipment Release</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="equipmentReleaseRequired"></td>
+                <td><input type="text" class="form-control form-control-sm" formControlName="emptyPickupYard" placeholder="Empty yard"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="equipmentReleaseDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="equipmentReleaseDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="equipmentReleaseProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Inspection Agency</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="inspectionAgencyRequired"></td>
+                <td colspan="2">
+                  <label class="form-label small">Name</label>
+                  <input type="text" class="form-control form-control-sm" formControlName="inspectionAgencyName" placeholder="e.g. Neroli">
+                </td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="inspectionAgencyDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="inspectionAgencyDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="inspectionAgencyProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Federal Produce</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="federalProduceRequired"></td>
+                <td></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="federalProduceDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="federalProduceDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="federalProduceProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Quarantine</td>
+                <td><input type="checkbox" class="form-check-input" formControlName="quarantineRequired"></td>
+                <td></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="quarantineDateProcessed"></td>
+                <td><input type="date" class="form-control form-control-sm" formControlName="quarantineDateReceived"></td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="quarantineProcessedBy">
+                    <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.disabled">Save</button>
+  </form>
+</div>

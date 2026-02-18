@@ -1,0 +1,51 @@
+/* Custom styles for header component */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Dropdown animation enhancements */
+.dropdown-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.dropdown-leave {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-leave-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 75ms ease-in, transform 75ms ease-in;
+}
+
+/* Ensure proper z-index for dropdown */
+.dropdown-menu {
+  z-index: 1000;
+}
+
+/* Mobile menu animation */
+.mobile-menu {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Focus styles for accessibility */
+.focus\:ring-blue-500:focus {
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+}
+
+/* Hover effects */
+.hover\:bg-gray-100:hover {
+  background-color: rgb(243 244 246);
+}
+
+.hover\:text-blue-600:hover {
+  color: rgb(37 99 235);
+}

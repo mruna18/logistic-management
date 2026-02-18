@@ -1,0 +1,105 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Finance</h4>
+
+  <!-- Finance Reconciliation Report -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header py-2">
+      <h6 class="mb-0">Finance Reconciliation Report</h6>
+    </div>
+    <div class="card-body p-2">
+      <div class="row g-2">
+        <div class="col-md-3">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <span class="small text-muted">Total Landed Cost</span>
+              <h6 class="mb-0">{{ totalCost | number:'1.0-0' }}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <span class="small text-muted">Total Payments</span>
+              <h6 class="mb-0">{{ payments.length }}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <span class="small text-muted">Reconciled</span>
+              <h6 class="mb-0 text-success">{{ payments.length > 0 ? 'Yes' : 'Pending' }}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <span class="small text-muted">Outstanding</span>
+              <h6 class="mb-0">{{ totalCost - totalPaymentsAmount | number:'1.0-0' }}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Payments Table -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Payments</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th>Payment Type</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Reference</th>
+                  <th>Linked Shipment</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (payment of payments; track payment.id) {
+                  <tr>
+                    <td>{{ payment.type }}</td>
+                    <td>{{ payment.amount | number:'1.2-2' }}</td>
+                    <td>{{ payment.date | date:'short' }}</td>
+                    <td>{{ payment.reference }}</td>
+                    <td>{{ payment.shipmentId }}</td>
+                    <td>
+                      <a [routerLink]="['/shipments', payment.shipmentId]" class="btn btn-sm btn-outline-primary">View Shipment</a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Cost Summary -->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body p-2">
+          <h6 class="mb-3">Total Cost Summary</h6>
+          <div class="mb-2">
+            <strong>Total Cost:</strong>
+            <h4 class="text-primary">{{ totalCost | number:'1.2-2' }}</h4>
+          </div>
+          <div>
+            <strong>Total Payments:</strong>
+            <p class="mb-0">{{ payments.length }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

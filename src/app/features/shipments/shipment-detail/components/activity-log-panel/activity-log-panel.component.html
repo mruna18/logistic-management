@@ -1,0 +1,22 @@
+<div class="activity-log-panel card shadow-sm">
+  <div class="card-header py-2 d-flex justify-content-between align-items-center" [attr.data-bs-toggle]="'collapse'" [attr.data-bs-target]="'#' + panelId" role="button">
+    <h6 class="mb-0 fw-semibold small">Activity Log</h6>
+    <span class="badge bg-secondary">{{ activities.length }}</span>
+  </div>
+  <div class="collapse show" [id]="panelId">
+    <div class="card-body p-2">
+      <div class="timeline">
+        <div *ngFor="let a of activities; trackBy: trackByActivityId" class="timeline-item small mb-2">
+          <div class="d-flex">
+            <div class="timeline-marker me-2"></div>
+            <div>
+              <span class="fw-semibold">{{ a.action }}</span>
+              <span class="text-muted d-block">{{ a.description }}</span>
+              <span class="text-muted" style="font-size: 11px;">{{ a.performedBy }} · {{ a.timestamp | date:'dd MMM yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

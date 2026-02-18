@@ -1,0 +1,28 @@
+<div class="card shadow-sm">
+  <div class="card-body p-3">
+    <h6 class="mb-3">Transit Information</h6>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <strong>Vessel:</strong>
+        <p>{{ shipment.transit.vessel }}</p>
+      </div>
+      <div class="col-md-4">
+        <strong>Voyage:</strong>
+        <p>{{ shipment.transit.voyage }}</p>
+      </div>
+      <div class="col-md-4">
+        <strong>Estimated Arrival:</strong>
+        <p>{{ shipment.transit.estimatedArrival | date:'short' }}</p>
+      </div>
+      <div class="col-md-4">
+        <strong>Actual Arrival:</strong>
+        <p>{{ shipment.transit.actualArrival ? (shipment.transit.actualArrival | date:'short') : 'N/A' }}</p>
+      </div>
+      <div class="col-md-4">
+        <strong>Current Location:</strong>
+        <p>{{ shipment.transit.currentLocation || 'N/A' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+

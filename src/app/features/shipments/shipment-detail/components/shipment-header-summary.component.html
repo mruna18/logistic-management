@@ -1,0 +1,52 @@
+<div class="card shadow-sm p-2 mb-3 border-0 border-start border-4 border-primary">
+  <div class="row g-2 align-items-center">
+    <div class="col-md-3">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Order Reference</span>
+        <span class="fw-bold text-primary">{{ shipment.orderReference }}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Product Type</span>
+        <span class="small fw-medium">{{ shipment.productType }}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Container Info</span>
+        <span class="small fw-medium">{{ shipment.containerInfo }}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Allocation Date</span>
+        <span class="small fw-medium">{{ shipment.allocationDate | date:'dd MMM yyyy' }}</span>
+      </div>
+    </div>
+    <div class="col-md-3 text-end">
+      <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusBadgeClass(shipment.status)">
+        {{ shipment.status }}
+      </span>
+    </div>
+
+    <div class="col-md-3">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Logistic Type</span>
+        <span class="small fw-medium">{{ shipment.logisticType }}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Mode</span>
+        <span class="small fw-medium"><i class="bi bi-ship me-1"></i>{{ shipment.mode }}</span>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="d-flex flex-column">
+        <span class="small text-muted fw-semibold">Shipment Type</span>
+        <span class="small fw-medium">{{ shipment.shipmentType }}</span>
+      </div>
+    </div>
+  </div>
+</div>

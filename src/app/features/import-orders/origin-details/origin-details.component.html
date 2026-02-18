@@ -1,0 +1,109 @@
+<div class="origin-details">
+  <div *ngIf="showComplianceAlert()" class="alert alert-danger mb-3 py-2 small">
+    <strong>Compliance Alert:</strong> ATD is before Form M Approval Date. Please verify.
+  </div>
+
+  <form [formGroup]="form">
+    <!-- Card 1: Goods Readiness -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">Goods Readiness</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Goods Collection By</label>
+            <select class="form-select form-select-sm" formControlName="goodsCollectionBy">
+              <option value="">-- Select --</option>
+              <option *ngFor="let opt of goodsCollectionByOptions; trackBy: trackByIndex" [value]="opt">{{ opt }}</option>
+            </select>
+            <div class="invalid-feedback d-block" *ngIf="goodsCollectionBy?.invalid && goodsCollectionBy?.touched">
+              Required.
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Readiness Estimated Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="readinessEstimatedDate">
+            <div class="invalid-feedback d-block" *ngIf="readinessEstimatedDate?.invalid && readinessEstimatedDate?.touched">
+              Required.
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Readiness Actual Date</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="date" class="form-control form-control-sm flex-grow-1" formControlName="readinessActualDate">
+              <span *ngIf="showProductionBadge()" class="badge" [ngClass]="productionBadgeClass()">{{ productionBadgeText() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Shipping Line & Vessel -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">Shipping Line &amp; Vessel</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Shipping Line</label>
+            <select class="form-select form-select-sm" formControlName="shippingLine">
+              <option value="">-- Select shipping line --</option>
+              <option *ngFor="let line of shippingLines; trackBy: trackByIndex" [value]="line">{{ line }}</option>
+            </select>
+            <div class="invalid-feedback d-block" *ngIf="shippingLine?.invalid && shippingLine?.touched">
+              Required.
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">ETD</label>
+            <input type="date" class="form-control form-control-sm" formControlName="etd">
+            <div class="invalid-feedback d-block" *ngIf="etd?.invalid && etd?.touched">
+              <span *ngIf="etd?.errors?.['required']">Required.</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">ATD</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="date" class="form-control form-control-sm flex-grow-1" formControlName="atd">
+              <span *ngIf="showSailingBadge()" class="badge" [ngClass]="sailingBadgeClass()">{{ sailingBadgeText() }}</span>
+            </div>
+            <div class="invalid-feedback d-block" *ngIf="atd?.errors?.['atdBeforeEtd'] && atd?.touched">
+              ATD cannot be before ETD.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Shipping Documents -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">Shipping Documents</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Documents Couriered By</label>
+            <select class="form-select form-select-sm" formControlName="documentsCourieredBy">
+              <option value="">-- Select --</option>
+              <option *ngFor="let opt of documentsCourieredByOptions; trackBy: trackByIndex" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Documents Courier Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="documentsCourierDate">
+            <div class="invalid-feedback d-block" *ngIf="documentsCourierDate?.invalid && documentsCourierDate?.touched">
+              <span *ngIf="documentsCourierDate?.errors?.['required']">Required when couriered by is selected.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid">Save</button>
+    </div>
+  </form>
+</div>

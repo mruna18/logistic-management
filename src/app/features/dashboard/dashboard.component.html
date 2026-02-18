@@ -1,0 +1,363 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Dashboard</h4>
+
+  <!-- Import Lifecycle Phase Overview -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header py-2">
+      <h6 class="mb-0">Import Lifecycle – Phase Overview</h6>
+    </div>
+    <div class="card-body p-2">
+      <div class="row g-2">
+        @for (p of phaseOverview; track p.phase) {
+          <div class="col-6 col-md-4 col-lg-2">
+            <div class="card bg-light h-100">
+              <div class="card-body p-2 text-center">
+                <span class="badge bg-primary mb-1">Phase {{ p.phase }}</span>
+                <h6 class="mb-0 small">{{ p.label }}</h6>
+                <h5 class="mb-0 mt-1">{{ p.count }}</h5>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Active Shipments</h6>
+          <h4 class="mb-0">{{ kpis.activeShipments ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Containers in Port</h6>
+          <h4 class="mb-0">{{ kpis.containersAtPort ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">In Clearance</h6>
+          <h4 class="mb-0">{{ kpis.containersInClearance ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Refund Pending</h6>
+          <h4 class="mb-0 text-warning">{{ kpis.refundPending ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Demurrage Risk</h6>
+          <h4 class="mb-0 text-danger">{{ kpis.demurrageRisk ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Approval Pending</h6>
+          <h4 class="mb-0 text-info">{{ kpis.approvalPending ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Delivered (Month)</h6>
+          <h4 class="mb-0">{{ kpis.deliveredThisMonth ?? 0 }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Avg Clearance (Days)</h6>
+          <h4 class="mb-0">{{ (kpis.averageClearanceDays ?? 0) | number:'1.1-1' }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card shadow-sm p-2">
+        <div class="card-body p-2">
+          <h6 class="text-muted mb-1 small">Total Revenue</h6>
+          <h6 class="mb-0">{{ (kpis.totalRevenue ?? 0) | number:'1.0-0' }}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export KPIs -->
+  <div class="card shadow-sm mb-3 border-primary">
+    <div class="card-header py-2 bg-primary bg-opacity-10">
+      <h6 class="mb-0">Export Workflow KPIs</h6>
+    </div>
+    <div class="card-body p-2">
+      <div class="row g-2">
+        <div class="col-6 col-md-3">
+          <div class="card bg-light h-100">
+            <div class="card-body p-2 text-center">
+              <h6 class="text-muted mb-1 small">Export Active</h6>
+              <h5 class="mb-0 text-primary">{{ kpis.exportActive ?? 0 }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card bg-light h-100">
+            <div class="card-body p-2 text-center">
+              <h6 class="text-muted mb-1 small">Sailed</h6>
+              <h5 class="mb-0 text-success">{{ kpis.exportSailed ?? 0 }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card bg-light h-100">
+            <div class="card-body p-2 text-center">
+              <h6 class="text-muted mb-1 small">Ready for Invoice</h6>
+              <h5 class="mb-0">{{ kpis.exportReadyForInvoice ?? 0 }}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card bg-light h-100">
+            <div class="card-body p-2 text-center">
+              <h6 class="text-muted mb-1 small">Export Closed</h6>
+              <h5 class="mb-0">{{ kpis.exportClosed ?? 0 }}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Import Status</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (shipmentStatusData.labels) {
+            <app-chart 
+              type="doughnut" 
+              [data]="shipmentStatusData"
+              [options]="{ plugins: { legend: { position: 'bottom' } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary bg-opacity-10">
+          <h6 class="mb-0">Export Status</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (exportStatusData.labels) {
+            <app-chart 
+              type="doughnut" 
+              [data]="exportStatusData"
+              [options]="{ plugins: { legend: { position: 'bottom' } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Monthly Trend</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (monthlyShipmentsData.labels) {
+            <app-chart 
+              type="line" 
+              [data]="monthlyShipmentsData"
+              [options]="{ plugins: { legend: { display: false } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: Terminal, Clearance SLA, Turnaround -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Terminal Performance</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (terminalPerformanceData.labels) {
+            <app-chart 
+              type="bar" 
+              [data]="terminalPerformanceData"
+              [options]="{ plugins: { legend: { display: false } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Clearance SLA</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (clearanceSLAData.labels) {
+            <app-chart 
+              type="doughnut" 
+              [data]="clearanceSLAData"
+              [options]="{ plugins: { legend: { position: 'bottom' } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Container Turnaround (Days)</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (containerTurnaroundData.labels) {
+            <app-chart 
+              type="line" 
+              [data]="containerTurnaroundData"
+              [options]="{ plugins: { legend: { display: false } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 3 -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Container Status</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (containerStatusData.labels) {
+            <app-chart 
+              type="bar" 
+              [data]="containerStatusData"
+              [options]="{ plugins: { legend: { display: false } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Demurrage Risk Trend</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (demurrageRiskData.labels) {
+            <app-chart 
+              type="bar" 
+              [data]="demurrageRiskData"
+              [options]="{ 
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+              }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Product Type Distribution</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (productTypeData.labels) {
+            <app-chart 
+              type="pie" 
+              [data]="productTypeData"
+              [options]="{ plugins: { legend: { position: 'bottom' } } }">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Trend -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Revenue Trend (Last 6 Months)</h6>
+        </div>
+        <div class="card-body p-2">
+          @if (revenueTrendData.labels) {
+            <app-chart 
+              type="line" 
+              [data]="revenueTrendData"
+              [options]="revenueChartOptions">
+            </app-chart>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Shipments -->
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h6 class="mb-0">Recent Shipments</h6>
+    </div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Order Ref</th>
+              <th>Shipment Ref</th>
+              <th>Product</th>
+              <th>Service Scope</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (shipment of recentShipments; track shipment.id) {
+              <tr>
+                <td>{{ shipment.orderReference }}</td>
+                <td>{{ shipment.shipmentReference }}</td>
+                <td>{{ shipment.productType }}</td>
+                <td>{{ shipment.serviceScope }}</td>
+                <td>
+                  <app-status-badge [status]="shipment.status"></app-status-badge>
+                </td>
+                <td>
+                  <a [routerLink]="['/shipments', shipment.id]" class="btn btn-sm btn-outline-primary">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

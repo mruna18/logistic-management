@@ -1,0 +1,11 @@
+<ul class="nav nav-tabs border-bottom-0 mb-2">
+  <li class="nav-item" *ngFor="let tab of tabs">
+    <a class="nav-link py-1 px-3 small fw-semibold" 
+       [class.active]="activeTab === tab"
+       [class.text-muted]="activeTab !== tab"
+       href="javascript:void(0)"
+       (click)="setActiveTab(tab)">
+      {{ tab }}
+    </a>
+  </li>
+</ul>

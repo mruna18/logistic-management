@@ -1,0 +1,103 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="sidebar-header">
+    <a routerLink="/dashboard" class="sidebar-brand" [class.collapsed]="collapsed">
+      @if (collapsed) {
+        <img src="assets/favicon.ico" alt="Logo" class="sidebar-logo-favicon" />
+      } @else {
+        <img src="assets/e-logo-2.svg" alt="Logo" class="sidebar-logo-img" />
+        <span class="sidebar-logo">Logistics ERP</span>
+      }
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="nav flex-column">
+      @for (item of menuItems; track item.path) {
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [attr.title]="collapsed ? item.label : null">
+            <span class="nav-icon"><app-sidebar-icon [name]="item.icon" /></span>
+            @if (!collapsed) {
+              <span class="nav-label">{{ item.label }}</span>
+              @if (item.badge != null) {
+                <span class="badge rounded-pill bg-primary ms-auto">{{ item.badge }}</span>
+              }
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    @if (!collapsed) {
+      <div class="sidebar-user dropdown">
+        <button
+          type="button"
+          class="sidebar-user-btn"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          <span class="sidebar-user-icon"><app-sidebar-icon name="person" /></span>
+          <span class="sidebar-user-label">Hello, {{ userName }}</span>
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">Layout</h6></li>
+          <li>
+            <button class="dropdown-item active" type="button" (click)="setLayoutMode('sidebar')">
+              Sidebar view
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" type="button" (click)="setLayoutMode('header')">
+              Header view
+            </button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+          <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+          <li><button class="dropdown-item" type="button" (click)="logout()">Logout</button></li>
+        </ul>
+      </div>
+    } @else {
+      <div class="dropdown">
+        <button
+          type="button"
+          class="sidebar-user-btn collapsed"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          title="User menu">
+          <span class="sidebar-user-icon"><app-sidebar-icon name="person" /></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">Layout</h6></li>
+          <li>
+            <button class="dropdown-item active" type="button" (click)="setLayoutMode('sidebar')">
+              Sidebar view
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" type="button" (click)="setLayoutMode('header')">
+              Header view
+            </button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+          <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+          <li><button class="dropdown-item" type="button" (click)="logout()">Logout</button></li>
+        </ul>
+      </div>
+    }
+    <button
+      type="button"
+      class="sidebar-toggle"
+      (click)="toggle()"
+      [attr.title]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <span class="toggle-icon"><app-sidebar-icon [name]="collapsed ? 'chevron-right' : 'chevron-left'" /></span>
+    </button>
+  </div>
+</aside>

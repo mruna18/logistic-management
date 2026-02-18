@@ -1,0 +1,38 @@
+<div class="container-fluid p-2">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0 text-primary fw-bold">Window 2 – Team & Documentation</h5>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary">Cancel</button>
+      <button type="button" class="btn btn-sm btn-primary px-3" (click)="onSave()">Save Changes</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center p-5">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <span class="ms-2 small text-muted">Loading documentation data...</span>
+  </div>
+
+  <div *ngIf="!isLoading" [formGroup]="mainForm">
+    <div class="row g-3">
+      <div class="col-12">
+        <!-- New Erp Dynamic Form Engine -->
+        <app-erp-dynamic-form 
+          *ngIf="teamSchema$ | async as schema"
+          [schema]="schema"
+          [showActions]="false"
+          (formSubmit)="handleTeamFormSubmit($event)">
+        </app-erp-dynamic-form>
+      </div>
+      
+      <div class="col-12">
+        <app-closure-section [closureForm]="closureFormGroup"></app-closure-section>
+      </div>
+
+      <div class="col-12">
+        <app-documentation-table [parentForm]="mainForm"></app-documentation-table>
+      </div>
+    </div>
+  </div>
+</div>

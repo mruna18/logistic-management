@@ -1,0 +1,12 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Shipments</h4>
+
+  <app-data-table
+    [columns]="columns"
+    [data]="shipments"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    rowLinkPath="/shipments"
+    rowIdField="id">
+  </app-data-table>
+</div>
+

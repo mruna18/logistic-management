@@ -1,0 +1,47 @@
+<header class="shipment-header sticky-top bg-white shadow-sm border-bottom py-2 z-index-100">
+  <div class="container-fluid">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-2">
+        <span class="small text-muted fw-semibold d-block">Shipment No</span>
+        <span class="fw-bold text-primary">{{ shipment.shipmentNo }}</span>
+      </div>
+      <div class="col-md-2" *ngIf="shipment.orderReference">
+        <span class="small text-muted fw-semibold d-block">Order</span>
+        <a [routerLink]="['/import-orders', getOrderId(shipment.orderReference)]" class="text-primary text-decoration-none small fw-medium">
+          {{ shipment.orderReference }}
+        </a>
+      </div>
+      <div class="col-md-2">
+        <span class="small text-muted fw-semibold d-block">Client</span>
+        <span class="small fw-medium">{{ shipment.clientName }}</span>
+      </div>
+      <div class="col-md-1">
+        <span class="small text-muted fw-semibold d-block">Type</span>
+        <span class="badge" [ngClass]="getShipmentTypeBadgeClass(shipment)">{{ getShipmentTypeLabel(shipment) }}</span>
+      </div>
+      <div class="col-md-1">
+        <span class="small text-muted fw-semibold d-block">Mode</span>
+        <span class="small fw-medium">{{ shipment.shipmentMode }}</span>
+      </div>
+      <div class="col-md-2">
+        <span class="small text-muted fw-semibold d-block">ETA</span>
+        <span class="small fw-medium">{{ shipment.eta | date:'dd MMM yyyy' }}</span>
+      </div>
+      <div class="col-md-1">
+        <span class="small text-muted fw-semibold d-block">Duty</span>
+        <span class="small fw-medium" [ngClass]="getDutyStatusClass(shipment.dutyPaidStatus)">{{ shipment.dutyPaidStatus }}</span>
+      </div>
+      <div class="col-md-1">
+        <span class="small text-muted fw-semibold d-block">Containers</span>
+        <span class="small fw-medium">{{ shipment.containerCount }}</span>
+      </div>
+      <div class="col-md-1">
+        <span class="small text-muted fw-semibold d-block">Risk</span>
+        <span class="badge" [ngClass]="getRiskBadgeClass(shipment.riskLevel)">{{ shipment.riskLevel }}</span>
+      </div>
+      <div class="col-md-1 text-end">
+        <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusBadgeClass(shipment.status)">{{ getStatusLabel(shipment.status) }}</span>
+      </div>
+    </div>
+  </div>
+</header>

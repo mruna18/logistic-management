@@ -1,0 +1,135 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Import Order Details</h4>
+    <a routerLink="/import-orders" class="btn btn-secondary btn-sm">Back to List</a>
+  </div>
+
+  @if (!loaded) {
+    <div class="text-center py-4 text-muted">Loading...</div>
+  } @else if (!order) {
+    <div class="alert alert-warning">
+      Order not found. <a routerLink="/import-orders">Return to list</a>
+    </div>
+  } @else {
+    <div class="card shadow-sm">
+      <div class="card-body p-3">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <strong>Order Reference:</strong>
+            <p>{{ order.orderReference }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Product Type:</strong>
+            <p>{{ order.productType }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Logistic Type:</strong>
+            <p>{{ order.logisticType }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Status:</strong>
+            <p><app-status-badge [status]="order.status"></app-status-badge></p>
+          </div>
+          <div class="col-md-3">
+            <strong>Movement Type:</strong>
+            <p>{{ order.movementType }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Service Scope:</strong>
+            <p>{{ order.serviceScope }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Container Count:</strong>
+            <p>{{ order.containerCount }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Allocation Date:</strong>
+            <p>{{ order.allocationDate | date:'short' }}</p>
+          </div>
+          <div class="col-md-3">
+            <strong>Clearing Type:</strong>
+            <p>{{ order.clearingType }}</p>
+          </div>
+          <div class="col-12">
+            <strong>Container Description:</strong>
+            <p>{{ order.containerDescription }}</p>
+          </div>
+        </div>
+        <div class="mt-3">
+          <a [routerLink]="['/import-orders', order.id, 'edit']" class="btn btn-primary btn-sm me-2">Edit</a>
+        </div>
+        @if (shipments.length > 0) {
+          <div class="mt-2 pt-3 border-top">
+            <strong>Linked Shipments</strong>
+            <div class="table-responsive mt-2">
+              <table class="table table-sm table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Shipment Ref</th>
+                    <th>Vessel</th>
+                    <th>Containers</th>
+                    <th>ETA</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of shipments; track s.id) {
+                    <tr>
+                      <td><a [routerLink]="['/shipments', s.id]" class="text-primary text-decoration-none">{{ s.shipmentReference }}</a></td>
+                      <td>{{ s.transit.vessel }}</td>
+                      <td>{{ s.containers.length }}</td>
+                      <td>{{ s.transit.estimatedArrival | date:'short' }}</td>
+                      <td><app-status-badge [status]="s.status"></app-status-badge></td>
+                      <td>
+                        <a [routerLink]="['/shipments', s.id]" class="btn btn-sm btn-outline-primary">View</a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+        @if (containers.length > 0) {
+          <div class="mt-2 pt-3 border-top">
+            <strong>Linked Containers</strong>
+            <div class="table-responsive mt-2">
+              <table class="table table-sm table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Container No</th>
+                    <th>Type</th>
+                    <th>Shipment</th>
+                    <th>Arrival</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (c of containers; track c.id) {
+                    <tr>
+                      <td>{{ c.containerNo }}</td>
+                      <td>{{ c.type }}</td>
+                      <td>
+                        @if (c.shipmentId) {
+                          <a [routerLink]="['/shipments', c.shipmentId]" class="text-primary text-decoration-none">{{ c.shipmentReference ?? c.shipmentId }}</a>
+                        } @else {
+                          —
+                        }
+                      </td>
+                      <td>{{ c.arrivalDate | date:'short' }}</td>
+                      <td><app-status-badge [status]="c.status"></app-status-badge></td>
+                      <td><a routerLink="/containers" class="btn btn-sm btn-outline-secondary">View All</a></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+

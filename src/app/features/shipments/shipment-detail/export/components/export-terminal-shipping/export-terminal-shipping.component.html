@@ -1,0 +1,137 @@
+<div class="export-terminal-shipping">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">5. Terminal & Shipping</h6>
+      </div>
+      <div class="card-body p-2">
+        <h6 class="fw-semibold small text-muted mb-2">Terminal</h6>
+        <div class="row g-2 mb-3">
+          <div class="col-md-2">
+            <label class="form-label small">Terminal Name</label>
+            <select class="form-select form-select-sm" formControlName="terminalName">
+              <option value="">—</option>
+              <option *ngFor="let t of terminals" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Terminal DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalDnReceived">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Terminal DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalDnPaid">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Terminal Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="terminalValidTill">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Terminal DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnReceived">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Terminal DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnPaid">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Terminal Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalValidTill">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Last Container Gated In</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="lastContainerGatedIn" readonly>
+            <small class="text-muted">Auto from transport</small>
+          </div>
+        </div>
+        <h6 class="fw-semibold small text-muted mb-2">Shipping</h6>
+        <div class="row g-2">
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line</label>
+            <select class="form-select form-select-sm" formControlName="shippingLine">
+              <option value="">— Select —</option>
+              <option *ngFor="let s of shippingLines" [value]="s">{{ s }}</option>
+            </select>
+            <small class="text-muted" *ngIf="shippingLineFromTransport">From Window 3</small>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Vessel Name</label>
+            <input type="text" class="form-control form-control-sm" formControlName="vesselName">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">ETD</label>
+            <input type="date" class="form-control form-control-sm" formControlName="etd">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">ATD</label>
+            <input type="date" class="form-control form-control-sm" formControlName="atd">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Freight Paid By</label>
+            <select class="form-select form-select-sm" formControlName="shippingFreightPaidBy">
+              <option value="">—</option>
+              <option *ngFor="let o of freightPaidByOptions" [value]="o">{{ o }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Freight DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingFreightDnReceived">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Freight DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingFreightDnPaid">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line Local DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingLineLocalDnReceived">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line Local DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingLineLocalDnPaid">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Shipping Line Local DN Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="shippingLineLocalDnValidTill">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Vessel Planning Submitted</label>
+            <input type="date" class="form-control form-control-sm" formControlName="vesselPlanningSubmitted">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Shipping DN Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnReceived">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Shipping DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnPaid">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Additional Shipping Valid Till</label>
+            <input type="date" class="form-control form-control-sm" formControlName="additionalShippingValidTill">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Draft OBL Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="draftOblReceivedDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Draft OBL Sent to Client for Confirmation</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="draftOblSentToClientDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Draft OBL Approved by Client</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="draftOblApprovedByClientDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Collection of OBL</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="oblCollectionDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">OBL Submitted to Invoicing Team</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="oblSubmittedToInvoicingDateTime">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.disabled">Save</button>
+  </form>
+</div>

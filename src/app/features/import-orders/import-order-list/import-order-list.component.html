@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Orders (Import & Export)</h4>
+    <a routerLink="/import-orders/new" class="btn btn-primary btn-sm">+ New Order</a>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [data]="orders"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    rowLinkPath="/import-orders"
+    rowIdField="id">
+  </app-data-table>
+</div>
+

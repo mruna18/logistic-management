@@ -1,0 +1,86 @@
+<div class="export-inspections-customs">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">4. Inspections & Customs</h6>
+      </div>
+      <div class="card-body p-2">
+        <p class="small text-muted mb-2">VGM, packing list, CCI, NESS DN, customs inspection and release.</p>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">VGM Issued</label>
+            <input type="date" class="form-control form-control-sm" formControlName="vgmIssuedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">VGM Submitted to Shipping Line</label>
+            <input type="date" class="form-control form-control-sm" formControlName="vgmSubmittedToShippingLineDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Packing List & Invoice Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="packingListInvoiceReceivedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Packing List & Invoice Uploaded (Trade System)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="packingListInvoiceUploadedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">CCI Processed</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="cciProcessedDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">CCI Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="cciReceivedDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">NESS DN Received</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="nessDnReceivedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">NESS DN Processed By</label>
+            <select class="form-select form-select-sm" formControlName="nessDnProcessedBy">
+              <option value="">—</option>
+              <option *ngFor="let o of processedByOptions" [value]="o">{{ o }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">NESS DN Paid</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nessDnPaidDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">NESS Payment Receipt Uploaded (Trade Portal)</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nessPaymentReceiptUploadedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Application for Inspection by Customs</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="applicationForInspectionByCustomsDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">DTI Prepare SGD (docs: NXP, PFI)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="dtiPrepareSgdDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Examination with Customs & Agencies (NDLA, DSS, DPR)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="examinationWithCustomsAgencyDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Release by Customs & Agencies (NDLA, DSS, Quarantine)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="releaseByCustomsAgencyDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Export Release Docs to Shipping Line (48hrs before ETA)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="exportReleaseDocsToShippingLineDateTime">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Shipping Instruction to Shipping Line (before vessel arrive)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="shippingInstructionToShippingLineDateTime">
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Remarks</label>
+            <textarea class="form-control form-control-sm" formControlName="remarks" rows="2" placeholder="Additional notes"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.disabled">Save</button>
+  </form>
+</div>

@@ -1,0 +1,116 @@
+<div class="control-tower container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="mb-1 fw-bold">Control Tower</h4>
+      <p class="text-muted small mb-0">Operational intelligence for Import & Export</p>
+    </div>
+  </div>
+
+  <!-- Section 1: Shipment Overview -->
+  <section class="mb-4">
+    <h6 class="fw-semibold text-uppercase text-muted small mb-2">1. Shipment Overview</h6>
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Total Active" [value]="overview?.totalActive ?? 0" icon="📦"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Import" [value]="overview?.totalImport ?? 0" icon="📥"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Export" [value]="overview?.totalExport ?? 0" icon="📤"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Arrived at Port" [value]="overview?.arrivedAtPort ?? 0" icon="⚓"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Under Clearance" [value]="overview?.underClearance ?? 0" icon="✅"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="In Delivery" [value]="overview?.inDelivery ?? 0" icon="🚚"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Sailed (Export)" [value]="overview?.sailed ?? 0" icon="🚢"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <app-kpi-card label="Ready for Invoice" [value]="overview?.readyForInvoice ?? 0" icon="📄"></app-kpi-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Bottleneck Tracker -->
+  <section class="mb-4">
+    <h6 class="fw-semibold text-uppercase text-muted small mb-2">2. Operational Bottlenecks</h6>
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Stuck in PAAR (>3d)" [value]="bottlenecks?.stuckInPaar ?? 0" [highlight]="true"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Stuck in Customs (>5d)" [value]="bottlenecks?.stuckInCustoms ?? 0" [highlight]="true"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Stuck in Regulatory (>4d)" [value]="bottlenecks?.stuckInRegulatory ?? 0" [highlight]="true"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Containers in Terminal (>7d)" [value]="bottlenecks?.containersInTerminal ?? 0" [highlight]="true"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Export waiting for vessel" [value]="bottlenecks?.exportWaitingForVessel ?? 0" [highlight]="true"></app-kpi-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Financial Exposure -->
+  <section class="mb-4">
+    <h6 class="fw-semibold text-uppercase text-muted small mb-2">3. Financial Exposure</h6>
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Duty Unpaid" [value]="formatCurrency(financial?.dutyUnpaidTotal ?? 0)"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Refund Pending" [value]="formatCurrency(financial?.refundPendingTotal ?? 0)"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Demurrage Risk" [value]="(financial?.demurrageRiskContainers ?? 0) + ' containers'"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Invoice Pending" [value]="formatCurrency(financial?.invoicePendingAmount ?? 0)"></app-kpi-card>
+      </div>
+      <div class="col-6 col-md-4 col-lg">
+        <app-kpi-card label="Unbilled Shipments" [value]="financial?.unbilledShipmentsCount ?? 0"></app-kpi-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Container Movement -->
+  <section class="mb-4">
+    <h6 class="fw-semibold text-uppercase text-muted small mb-2">4. Container Movement</h6>
+    <div class="row g-2">
+      <div class="col-12 col-lg-6">
+        <app-chart-widget title="Containers by Status" type="bar" [data]="containerChartData" [height]="220"></app-chart-widget>
+      </div>
+      <div class="col-12 col-lg-6">
+        <app-chart-widget title="Movement Overview" type="doughnut" [data]="containerChartData" [height]="220"></app-chart-widget>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5 & 6: Client & Agent Performance -->
+  <section class="mb-4">
+    <div class="row g-2">
+      <div class="col-12 col-lg-6">
+        <h6 class="fw-semibold text-uppercase text-muted small mb-2">5. Client Performance</h6>
+        <app-table-widget title="" [columns]="clientColumns" [data]="clientPerformance"></app-table-widget>
+      </div>
+      <div class="col-12 col-lg-6">
+        <h6 class="fw-semibold text-uppercase text-muted small mb-2">6. Agent Performance</h6>
+        <app-table-widget title="" [columns]="agentColumns" [data]="agentPerformance"></app-table-widget>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Alerts & Risks -->
+  <section>
+    <h6 class="fw-semibold text-uppercase text-muted small mb-2">7. Alerts & Risks</h6>
+    <app-alert-widget [alerts]="alerts"></app-alert-widget>
+  </section>
+</div>

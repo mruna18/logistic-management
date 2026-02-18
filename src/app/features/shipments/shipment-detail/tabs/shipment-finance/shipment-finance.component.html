@@ -1,0 +1,47 @@
+<div class="row g-3">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-2">
+        <h6 class="mb-3">Payments</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>Payment Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of shipment.finance.payments; track payment.id) {
+                <tr>
+                  <td>{{ payment.type }}</td>
+                  <td>{{ payment.amount | number:'1.2-2' }}</td>
+                  <td>{{ payment.date | date:'short' }}</td>
+                  <td>{{ payment.reference }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-2">
+        <h6 class="mb-3">Total Cost Summary</h6>
+        <div class="mb-2">
+          <strong>Total Cost:</strong>
+          <h4 class="text-primary">{{ shipment.finance.totalCost | number:'1.2-2' }}</h4>
+        </div>
+        <div>
+          <strong>Total Paid:</strong>
+          <p class="mb-0">{{ getTotalPaid() | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,71 @@
+<header class="app-header">
+  <div class="header-top">
+    <div class="header-left">
+      <a routerLink="/dashboard" class="brand">
+        <img src="assets/e-logo-2.svg" alt="Logo" class="brand-logo" />
+        <span class="brand-name">Logistics ERP</span>
+        <span class="brand-module">{{ getCurrentModule() }}</span>
+      </a>
+    </div>
+
+    <nav class="header-nav">
+      @for (item of navItems; track item.path) {
+        <a
+          class="nav-link"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }">
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="header-right">
+      <span class="lang-selector">En</span>
+      <div class="dropdown user-dropdown">
+        <button
+          class="btn btn-link user-menu"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Hello, {{ userName }}
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <h6 class="dropdown-header">Layout</h6>
+          </li>
+          <li>
+            <button
+              class="dropdown-item"
+              type="button"
+              [class.active]="layoutMode() === 'sidebar'"
+              (click)="setLayoutMode('sidebar')">
+              Sidebar view
+            </button>
+          </li>
+          <li>
+            <button
+              class="dropdown-item"
+              type="button"
+              [class.active]="layoutMode() === 'header'"
+              (click)="setLayoutMode('header')">
+              Header view
+            </button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+          <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+          <li><button class="dropdown-item" type="button" (click)="logout()">Logout</button></li>
+        </ul>
+      </div>
+      <button type="button" class="btn btn-link help-btn" title="Help" aria-label="Help">
+        <span class="help-icon">?</span>
+      </button>
+      <button type="button" class="btn btn-link logout-btn" title="Logout" aria-label="Logout" (click)="logout()">
+        <span class="logout-icon">Logout</span>
+      </button>
+    </div>
+  </div>
+  <div class="header-accent"></div>
+</header>

@@ -1,0 +1,23 @@
+<div class="card shadow-sm p-2 mb-3 bg-white">
+  <div class="position-relative py-3">
+    <div class="progress-line">
+      <div class="progress-line-fill" [style.width]="getProgressWidth()"></div>
+    </div>
+    
+    <div class="d-flex justify-content-between position-relative" style="z-index: 2;">
+      <div *ngFor="let step of steps" class="d-flex flex-column align-items-center" style="width: 100px;">
+        <div class="step-indicator" 
+             [class.active]="step.stepNumber === currentStep"
+             [class.completed]="step.stepNumber < currentStep">
+          <i *ngIf="step.stepNumber < currentStep" class="bi bi-check small"></i>
+          <span *ngIf="step.stepNumber >= currentStep">{{ step.stepNumber }}</span>
+        </div>
+        <div class="step-label text-muted" 
+             [class.text-primary]="step.stepNumber === currentStep"
+             [class.fw-bold]="step.stepNumber === currentStep">
+          {{ step.label }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

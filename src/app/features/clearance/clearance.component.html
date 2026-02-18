@@ -1,0 +1,133 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Clearance</h4>
+
+  <div class="row g-3">
+    <!-- Shipments List -->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h6 class="mb-0">Select Shipment</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="list-group">
+            @for (shipment of shipments; track shipment.id) {
+              <a class="list-group-item list-group-item-action" 
+                 [class.active]="selectedShipment?.id === shipment.id"
+                 (click)="selectShipment(shipment)">
+                <div>
+                  <strong>{{ shipment.orderReference }}</strong><br>
+                  <small>{{ shipment.shipmentReference }}</small>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clearance Form -->
+    <div class="col-md-8">
+      @if (selectedShipment) {
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h6 class="mb-0">Clearance Details - {{ selectedShipment.orderReference }}</h6>
+          </div>
+          <div class="card-body p-3">
+            <form [formGroup]="paarForm" (ngSubmit)="saveClearance()">
+              <!-- PAAR Details -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">PAAR Details</h6>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <label class="form-label">PAAR Number</label>
+                      <input type="text" class="form-control form-control-sm" formControlName="paarNumber">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Duty Amount</label>
+                      <input type="number" class="form-control form-control-sm" formControlName="dutyAmount" min="0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Duty Payment -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">Duty Payment</h6>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="dutyPaid" id="dutyPaid">
+                        <label class="form-check-label" for="dutyPaid">Duty Paid</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Duty Payment Date</label>
+                      <input type="date" class="form-control form-control-sm" formControlName="dutyPaymentDate">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Customs Release -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">Customs Release</h6>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="customsRelease" id="customsRelease">
+                        <label class="form-check-label" for="customsRelease">Customs Release</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Customs Release Date</label>
+                      <input type="date" class="form-control form-control-sm" formControlName="customsReleaseDate">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terminal Release -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">Terminal Release</h6>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="terminalRelease" id="terminalRelease">
+                        <label class="form-check-label" for="terminalRelease">Terminal Release</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Terminal Release Date</label>
+                      <input type="date" class="form-control form-control-sm" formControlName="terminalReleaseDate">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="paarForm.invalid">Save Clearance</button>
+            </form>
+          </div>
+        </div>
+      } @else {
+        <div class="card shadow-sm">
+          <div class="card-body p-3 text-center text-muted">
+            <p>Select a shipment to view/edit clearance details</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,50 @@
+<div class="card shadow-sm mb-3 p-2">
+  <h6 class="fw-semibold text-muted small mb-2">Initial Documentation</h6>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.85rem;">
+      <thead class="table-light">
+        <tr>
+          <th>Document Name</th>
+          <th class="text-center" style="width: 80px;">Required</th>
+          <th>Date Processed</th>
+          <th>Date Received</th>
+          <th>Processed By</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody [formGroup]="parentForm">
+        <ng-container formArrayName="documents">
+          <tr *ngFor="let doc of documentsArray.controls; let i = index" [formGroupName]="i">
+            <td class="fw-medium text-muted">{{ doc.get('documentName')?.value }}</td>
+            <td class="text-center">
+              <input class="form-check-input" type="checkbox" formControlName="required">
+            </td>
+            <td>
+              <input type="date" class="form-control form-control-sm" formControlName="dateProcessed">
+            </td>
+            <td>
+              <input type="date" class="form-control form-control-sm" formControlName="dateReceived">
+            </td>
+            <td>
+              <select class="form-select form-select-sm" formControlName="processedBy">
+                <option value="Client">Client</option>
+                <option value="Agent">Agent</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-select form-select-sm d-inline-block w-auto me-1" formControlName="status">
+                <option value="Pending">Pending</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <span class="badge" [ngClass]="getStatusBadgeClass(doc.get('status')?.value)">
+                {{ doc.get('status')?.value }}
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,152 @@
+.card-header h6 {
+  font-weight: 500;
+}
+
+.form-label.small {
+  margin-bottom: 0.15rem;
+}
+
+.table-sm th,
+.table-sm td {
+  vertical-align: middle;
+}
+
+/* Window 2: Professional layout */
+.window2-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.window2-card {
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.window2-card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+}
+
+.window2-card .card-body {
+  padding: 1.25rem;
+}
+
+/* Document Requirements Table */
+.doc-requirements-table {
+  font-size: 0.9rem;
+}
+
+.doc-requirements-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.doc-requirements-table tbody td {
+  padding: 0.6rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.doc-requirements-table .doc-row:hover {
+  background-color: #fafbfc;
+}
+
+.doc-col-document {
+  min-width: 140px;
+  font-weight: 500;
+  color: #212529;
+}
+
+.doc-col-required {
+  width: 90px;
+}
+
+.doc-col-date {
+  min-width: 140px;
+}
+
+.doc-col-date input {
+  min-width: 130px;
+}
+
+.doc-col-processed {
+  min-width: 180px;
+}
+
+.doc-name {
+  font-size: 0.875rem;
+}
+
+.processed-by-group .btn {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.processed-by-group .btn-check:checked + .btn-outline-secondary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+/* Document Requirements - Card View */
+.doc-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.doc-card {
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.doc-card:hover {
+  border-color: #ced4da;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.doc-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.doc-card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+.doc-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doc-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.doc-card-field .form-label {
+  margin-bottom: 0;
+  font-size: 0.8rem;
+  color: #6c757d;
+}

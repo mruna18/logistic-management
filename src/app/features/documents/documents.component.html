@@ -1,0 +1,41 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Documents</h4>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Document Name</th>
+              <th>Type</th>
+              <th>Order Ref</th>
+              <th>Shipment Ref</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of allDocuments; track doc.id) {
+              <tr>
+                <td>{{ doc.name }}</td>
+                <td>{{ doc.type }}</td>
+                <td>{{ doc.orderRef }}</td>
+                <td>{{ doc.shipmentRef }}</td>
+                <td>{{ doc.uploadDate | date:'short' }}</td>
+                <td>
+                  @if (doc.url) {
+                    <a [href]="doc.url" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                  } @else {
+                    <span class="text-muted">N/A</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

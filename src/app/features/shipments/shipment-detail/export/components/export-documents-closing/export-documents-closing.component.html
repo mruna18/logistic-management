@@ -1,0 +1,43 @@
+<div class="export-documents-closing">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">6. Third Party Documents</h6>
+      </div>
+      <div class="card-body p-2">
+        <p class="small text-muted mb-2">Collection of original documents and submission to invoicing team.</p>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Collection of Original Fumigation Certificate (Fed Produce)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="fumigationCertificateCollectedDateTime">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Collection of Original Phytosanitary Certificate (Nig Agric Quarantine, with copy OBL)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="phytosanitaryCertificateCollectedDateTime">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Collection of Customs Final Closing Docs (after Vessel Sail)</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="customsFinalClosingDocsCollectedDateTime">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Inspection Act</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="inspectionActDateTime">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Stamped SGD</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="stampedSgdDateTime">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Stamped NXP</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="stampedNxpDateTime">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Submission to Invoicing Team — All Complete Documents</label>
+            <input type="datetime-local" class="form-control form-control-sm" formControlName="allCompleteDocsSubmittedToInvoicingDateTime">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.disabled">Save</button>
+  </form>
+</div>

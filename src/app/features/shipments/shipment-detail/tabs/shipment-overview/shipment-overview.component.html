@@ -1,0 +1,36 @@
+<div class="card shadow-sm">
+  <div class="card-body p-3">
+    <h6 class="mb-3">Overview</h6>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <strong>Order Reference:</strong>
+        <p>{{ shipment.orderReference }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Shipment Reference:</strong>
+        <p>{{ shipment.shipmentReference }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Product Type:</strong>
+        <p>{{ shipment.productType }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Service Scope:</strong>
+        <p>{{ shipment.serviceScope }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Status:</strong>
+        <p>{{ shipment.status }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Created:</strong>
+        <p>{{ shipment.createdAt | date:'short' }}</p>
+      </div>
+      <div class="col-md-3">
+        <strong>Last Updated:</strong>
+        <p>{{ shipment.updatedAt | date:'short' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+

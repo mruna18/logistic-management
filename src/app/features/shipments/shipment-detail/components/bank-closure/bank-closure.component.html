@@ -1,0 +1,47 @@
+<div class="bank-closure">
+  <div class="card shadow-sm mb-3">
+    <div class="card-header py-2 d-flex justify-content-between align-items-center">
+      <h6 class="mb-0 fw-semibold small">Phase 6: Bank Closure & Payment Finalization</h6>
+      <span class="badge" [ngClass]="{
+        'bg-secondary': status === 'pending',
+        'bg-warning text-dark': status === 'in_progress',
+        'bg-success': status === 'completed'
+      }">
+        {{ status === 'pending' ? 'Pending' : status === 'in_progress' ? 'In Progress' : 'Completed' }}
+      </span>
+    </div>
+    <div class="card-body p-2">
+      <form [formGroup]="form">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">1. Docs Submitted to Importer</label>
+            <input type="date" class="form-control form-control-sm" formControlName="docsSubmittedToImporterDate">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">2. Importer Stamp (Exchange Control)</label>
+            <input type="date" class="form-control form-control-sm" formControlName="importerStampDate">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">3. Docs Submitted to Bank</label>
+            <input type="date" class="form-control form-control-sm" formControlName="docsSubmittedToBankDate">
+            <small class="text-muted d-block">FECD / Exchange control document</small>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">4. Form M Closed Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="formMClosedDate">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">5. Payment Released Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="paymentReleasedDate">
+            <small class="text-muted d-block">LC / Collection / Transfer</small>
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Remarks</label>
+            <textarea class="form-control form-control-sm" formControlName="bankClosureRemarks" rows="2" placeholder="Bank closure notes..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm mt-2" (click)="onSave()" [disabled]="form.disabled">Save</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="container-fluid">
+  <h4 class="mb-3">Delivery</h4>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Order Ref</th>
+              <th>Shipment Ref</th>
+              <th>Delivery Address</th>
+              <th>Delivery Date</th>
+              <th>Delivered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (shipment of filteredShipments; track shipment.id) {
+              <tr>
+                <td>{{ shipment.orderReference }}</td>
+                <td>{{ shipment.shipmentReference }}</td>
+                <td>{{ shipment.delivery.deliveryAddress }}</td>
+                <td>{{ shipment.delivery.deliveryDate ? (shipment.delivery.deliveryDate | date:'short') : 'N/A' }}</td>
+                <td>
+                  @if (shipment.delivery.delivered) {
+                    <span class="badge bg-success">Yes</span>
+                  } @else {
+                    <span class="badge bg-secondary">No</span>
+                  }
+                </td>
+                <td>
+                  <a [routerLink]="['/shipments', shipment.id]" class="btn btn-sm btn-outline-primary">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,131 @@
+<div class="export-order-commercial">
+  <form [formGroup]="form">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2">
+        <h6 class="mb-0 fw-semibold small">1. Order Creation (Commercial)</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">Order No</label>
+            <input type="text" class="form-control form-control-sm" formControlName="orderNo" readonly>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">File Status</label>
+            <select class="form-select form-select-sm" formControlName="fileStatus">
+              <option *ngFor="let s of fileStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">File Status Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fileStatusDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Approval Mode</label>
+            <select class="form-select form-select-sm" formControlName="approvalMode">
+              <option *ngFor="let m of approvalModes" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Approval Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="approvalDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">PFI No.</label>
+            <input type="text" class="form-control form-control-sm" formControlName="pfiNumber" placeholder="PFI number">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">PFI Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="pfiDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Supplier</label>
+            <input type="text" class="form-control form-control-sm" formControlName="supplierName" placeholder="Supplier">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Buyer</label>
+            <input type="text" class="form-control form-control-sm" formControlName="buyerName" placeholder="Buyer">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Containers</label>
+            <input type="number" min="1" class="form-control form-control-sm" formControlName="containerCount">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Container Type</label>
+            <select class="form-select form-select-sm" formControlName="containerType">
+              <option value="">-- Select --</option>
+              <option *ngFor="let ct of containerTypes" [value]="ct">{{ ct }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Product Description</label>
+            <input type="text" class="form-control form-control-sm" formControlName="productDescription">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">HS Code</label>
+            <input type="text" class="form-control form-control-sm" formControlName="hsCode">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Quantity</label>
+            <input type="number" min="0" class="form-control form-control-sm" formControlName="quantity">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Value</label>
+            <input type="number" min="0" class="form-control form-control-sm" formControlName="value">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Ex-Works</label>
+            <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="exWorks">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">FOB</label>
+            <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="fob">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Freight</label>
+            <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="freight">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">C&amp;F</label>
+            <input type="number" class="form-control form-control-sm text-end" formControlName="cnf" readonly>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Marine Insurance</label>
+            <input type="number" class="form-control form-control-sm text-end" formControlName="marineInsurance" readonly>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Total CIF</label>
+            <input type="number" class="form-control form-control-sm text-end" formControlName="totalCif" readonly>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Mode</label>
+            <select class="form-select form-select-sm" formControlName="shipmentMode">
+              <option *ngFor="let m of shipmentModes" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+          <!-- <div class="col-md-2">
+            <label class="form-label small">Type</label>
+            <select class="form-select form-select-sm" formControlName="jobType">
+              <option *ngFor="let t of jobTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div> -->
+          <div class="col-md-6">
+            <label class="form-label small">Scope</label>
+            <div class="d-flex flex-wrap gap-2">
+              <div class="form-check form-check-inline small" *ngFor="let scope of jobScopes">
+                <input type="checkbox" class="form-check-input" [checked]="(form.get('scope')?.value || []).includes(scope)" (change)="toggleScope(scope)">
+                <label class="form-check-label">{{ scope }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Additional File Details</label>
+            <textarea class="form-control form-control-sm" formControlName="additionalFileDetails" rows="2" placeholder="Additional file details"></textarea>
+          </div>
+        </div>
+        <small class="text-muted d-block mt-2">C&amp;F = Ex-Works + FOB + Freight | Marine Insurance = C&amp;F × 1.5% × 110% | Total CIF = C&amp;F + Insurance</small>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid || form.disabled">Save</button>
+  </form>
+</div>

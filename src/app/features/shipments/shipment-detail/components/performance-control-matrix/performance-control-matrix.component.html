@@ -1,0 +1,69 @@
+<div class="performance-control-matrix">
+  <form [formGroup]="form">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0 fw-semibold">Performance Control Matrix</h6>
+      <div class="text-muted small">
+        Stage | Planned | Actual | Delay | Responsible | Remarks
+      </div>
+    </div>
+    @for (phase of phases; track phase) {
+      @if (getStagesByPhase(phase).length > 0) {
+        <div class="card shadow-sm mb-3">
+          <div class="card-header py-2 bg-light">
+            <strong class="small">{{ getPhaseLabel(phase) }}</strong>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="small">Stage</th>
+                    <th class="small">Planned Date</th>
+                    <th class="small">Actual Date</th>
+                    <th class="small">Delay (Days)</th>
+                    <th class="small">Responsible</th>
+                    <th class="small">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="stages">
+                  @for (item of getStagesByPhase(phase); track item.ctrl.get('id')?.value) {
+                    <tr [formGroupName]="item.index">
+                      <td class="small">
+                        {{ item.ctrl.get('stageName')?.value }}
+                      </td>
+                      <td>
+                        <input type="date" class="form-control form-control-sm" formControlName="plannedDate">
+                      </td>
+                      <td>
+                        <input type="date" class="form-control form-control-sm" formControlName="actualDate">
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="getDelayBadgeClass(item.ctrl.get('delayDays')?.value)">
+                          {{ item.ctrl.get('delayDays')?.value ?? '—' }}
+                        </span>
+                      </td>
+                      <td>
+                        <select class="form-select form-select-sm" formControlName="responsibleParty">
+                          <option value="">—</option>
+                          @for (p of responsibleParties; track p) {
+                            <option [value]="p">{{ p }}</option>
+                          }
+                        </select>
+                      </td>
+                      <td>
+                        <input type="text" class="form-control form-control-sm" formControlName="remarks" placeholder="Delay reason...">
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+    }
+    <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid || form.disabled">
+      Save Matrix
+    </button>
+  </form>
+</div>

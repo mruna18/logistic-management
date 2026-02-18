@@ -1,0 +1,14 @@
+@if (layoutState.isSidebarMode()) {
+  <app-sidebar
+    [collapsed]="layoutState.sidebarCollapsed()"
+    (collapsedChange)="onSidebarCollapsedChange($event)">
+  </app-sidebar>
+} @else {
+  <app-navbar></app-navbar>
+}
+<div
+  class="main-content"
+  [class.sidebar-collapsed]="layoutState.isSidebarMode() && layoutState.sidebarCollapsed()"
+  [class.header-mode]="layoutState.isHeaderMode()">
+  <router-outlet></router-outlet>
+</div>

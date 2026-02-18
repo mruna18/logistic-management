@@ -1,0 +1,38 @@
+<div class="card shadow-sm">
+  <div class="card-body p-2">
+    <h6 class="mb-3">Containers</h6>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th>Container No</th>
+            <th>Type</th>
+            <th>Seal No</th>
+            <th>Arrival Date</th>
+            <th>Free Days</th>
+            <th>Gate Out Date</th>
+            <th>Empty Return</th>
+            <th>Demurrage</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (container of shipment.containers; track container.id) {
+            <tr>
+              <td>{{ container.containerNo }}</td>
+              <td>{{ container.type }}</td>
+              <td>{{ container.sealNo }}</td>
+              <td>{{ container.arrivalDate | date:'short' }}</td>
+              <td>{{ container.freeDays }}</td>
+              <td>{{ container.gateOutDate ? (container.gateOutDate | date:'short') : 'N/A' }}</td>
+              <td>{{ container.emptyReturn ? (container.emptyReturn | date:'short') : 'N/A' }}</td>
+              <td>{{ container.demurrage | number:'1.2-2' }}</td>
+              <td><app-status-badge [status]="container.status"></app-status-badge></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

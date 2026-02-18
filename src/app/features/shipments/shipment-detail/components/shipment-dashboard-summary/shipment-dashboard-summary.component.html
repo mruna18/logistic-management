@@ -1,0 +1,98 @@
+<div class="shipment-dashboard-summary">
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Order Reference</span>
+          <span class="fw-semibold">{{ shipment.orderReference }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Product Type</span>
+          <span class="fw-semibold">{{ shipment.productType }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Container Info</span>
+          <span class="fw-semibold">{{ shipment.containerInfo }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Total Landed Cost</span>
+          <span class="fw-semibold">{{ shipment.totalLandedCost | currency:'USD' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Freight Cost</span>
+          <span class="fw-semibold">{{ shipment.freightCost | currency:'USD' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Clearing Cost</span>
+          <span class="fw-semibold">{{ shipment.clearingCost | currency:'USD' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-2">
+          <span class="small text-muted d-block">Duty Paid</span>
+          <span class="fw-semibold">{{ shipment.dutyPaid | currency:'USD' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if (linkedContainers.length > 0) {
+    <div class="row g-3 mt-1">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 small fw-semibold">Linked Containers</h6>
+            <a routerLink="/containers" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Container No</th>
+                    <th>Type</th>
+                    <th>Arrival</th>
+                    <th>Status</th>
+                    <th>Demurrage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (c of linkedContainers; track c.id) {
+                    <tr>
+                      <td>{{ c.containerNo }}</td>
+                      <td>{{ c.type }}</td>
+                      <td>{{ c.arrivalDate | date:'short' }}</td>
+                      <td><span class="badge bg-secondary">{{ c.status }}</span></td>
+                      <td>{{ c.demurrage | number }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

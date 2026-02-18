@@ -1,0 +1,277 @@
+<div class="customs-regulatory">
+  <form [formGroup]="form">
+    <!-- <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="badge" [ngClass]="complianceStatusBadgeClass()">{{ complianceStatus() }}</span>
+    </div> -->
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold small">1. Customs</h6>
+        <span class="badge" [ngClass]="customsStatusBadgeClass()">{{ customsStatus() }}</span>
+      </div>
+      <div class="card-body p-2">
+        <h6 class="fw-semibold small text-muted mb-2">Basic</h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Clearing Agent</label>
+            <input type="text" class="form-control form-control-sm" formControlName="clearingAgent" placeholder="Agent name">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Channel</label>
+            <select class="form-select form-select-sm" formControlName="channel">
+              <option value="">-- Select channel --</option>
+              <option *ngFor="let c of channels; trackBy: trackByIndex" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Command</label>
+            <select class="form-select form-select-sm" formControlName="command">
+              <option *ngFor="let c of commandsList; trackBy: trackByIndex" [value]="c">{{ c }}</option>
+              <option [value]="CUSTOM_COMMAND_VALUE">+ Create new command</option>
+            </select>
+            <div *ngIf="form.get('command')?.value === CUSTOM_COMMAND_VALUE" class="input-group input-group-sm mt-1">
+              <input type="text"
+                     class="form-control form-control-sm"
+                     [(ngModel)]="customCommandInput"
+                     [ngModelOptions]="{standalone: true}"
+                     placeholder="Enter new command"
+                     (keydown.enter)="addCustomCommand(); $event.preventDefault()">
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="addCustomCommand()">Add</button>
+            </div>
+            <small class="text-muted" *ngIf="form.get('command')?.value === CUSTOM_COMMAND_VALUE">Type a new command and click Add to add it to the list.</small>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Documentation</h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Copy Docs Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="copyDocsReceived">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Copy Duty Receipt Received</label>
+            <input type="date" class="form-control form-control-sm" formControlName="copyDutyReceiptReceived">
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Process</h6>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">Custom Examination Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="customExaminationDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Custom Query</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="customQuery" id="customQuery">
+              <label class="form-check-label small" for="customQuery">Yes</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Custom Query Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="customQueryDate">
+            <div class="invalid-feedback d-block" *ngIf="customQueryDate?.invalid && customQueryDate?.touched">Required when query applicable.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Query Resolved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="customQueryResolvedDate">
+            <div class="invalid-feedback d-block" *ngIf="customQueryResolvedDate?.errors?.['dateBefore']">Cannot be before query date.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Custom Release Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="customReleaseDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('customReleaseDate')?.errors?.['releaseBeforeDutyReceipt']">Duty receipt must be received first.</div>
+            <div class="invalid-feedback d-block" *ngIf="form.get('customReleaseDate')?.errors?.['releaseBeforeQueryResolved']">Query must be resolved first.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Gate Process Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="gateProcessDate">
+            <div class="invalid-feedback d-block" *ngIf="gateProcessDate?.errors?.['dateBefore']">Only after release.</div>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Special Units</h6>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small">PCA Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="pcaDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">FOU Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fouDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">CIU Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="ciuDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Escort Applicable</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="escortApplicable" id="escortApplicable">
+              <label class="form-check-label small" for="escortApplicable">Yes</label>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">Operations</h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Trucks Passing Processed Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="trucksPassingProcessedDate">
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Operation Remarks</label>
+            <textarea class="form-control form-control-sm" formControlName="operationRemarks" rows="2"></textarea>
+          </div>
+        </div>
+
+        <h6 class="fw-semibold small text-muted mb-2 mt-3">FECD</h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">FECD Processed Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fecdProcessedDate">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">FECD Stamped Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fecdStampedDate">
+            <div class="invalid-feedback d-block" *ngIf="fecdStampedDate?.errors?.['dateBefore']">Only after FECD processed.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">FECD Submitted to Office Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fecdSubmittedToOfficeDate">
+            <div class="invalid-feedback d-block" *ngIf="fecdSubmittedToOfficeDate?.errors?.['dateBefore']">Only after stamped.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">FECD Submitted to Bank Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="fecdSubmittedToBankDate" placeholder="Exchange control document">
+            <small class="text-muted d-block">Final document for bank to release payment to supplier</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold small">2. NAFDAC</h6>
+        <span class="badge" [ngClass]="nafdacStatusBadgeClass()">{{ nafdacStatus() }}</span>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-2">
+            <label class="form-label small">NAFDAC Applicable</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="nafdacApplicable" id="nafdacApplicable">
+              <label class="form-check-label small" for="nafdacApplicable">Yes</label>
+            </div>
+          </div>
+        </div>
+        <div class="row g-2 mt-2" *ngIf="form.get('nafdacApplicable')?.value">
+          <div class="col-md-3">
+            <label class="form-label small">Invoice Requested Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacInvoiceRequestedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Paid Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacPaidDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('nafdacPaidDate')?.errors?.['dateBefore']">Cannot be before invoice requested.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Stamping Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacFirstStampingDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Second Stamping Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacSecondStampingDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('nafdacSecondStampingDate')?.errors?.['dateBefore']">Cannot be before first stamping.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Query Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacQueryDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Block Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacBlockDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Query Resolved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacQueryResolvedDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('nafdacQueryResolvedDate')?.errors?.['dateBefore']">Cannot be before query date.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Block Resolved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacBlockResolvedDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('nafdacBlockResolvedDate')?.errors?.['dateBefore']">Cannot be before block date.</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Query Detail</label>
+            <textarea class="form-control form-control-sm" formControlName="nafdacQueryDetail" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header py-2 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold small">3. SON</h6>
+        <span class="badge" [ngClass]="sonStatusBadgeClass()">{{ sonStatus() }}</span>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-2">
+            <label class="form-label small">SON Applicable</label>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" formControlName="sonApplicable" id="sonApplicable">
+              <label class="form-check-label small" for="sonApplicable">Yes</label>
+            </div>
+          </div>
+        </div>
+        <div class="row g-2 mt-2" *ngIf="form.get('sonApplicable')?.value">
+          <div class="col-md-3">
+            <label class="form-label small">Invoice Requested Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonInvoiceRequestedDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Paid Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonPaidDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('sonPaidDate')?.errors?.['dateBefore']">Cannot be before invoice requested.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">First Stamping Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonFirstStampingDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Second Stamping Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonSecondStampingDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('sonSecondStampingDate')?.errors?.['dateBefore']">Cannot be before first stamping.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Query Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonQueryDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Block Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonBlockDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Query Resolved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonQueryResolvedDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('sonQueryResolvedDate')?.errors?.['dateBefore']">Cannot be before query date.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Block Resolved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="sonBlockResolvedDate">
+            <div class="invalid-feedback d-block" *ngIf="form.get('sonBlockResolvedDate')?.errors?.['dateBefore']">Cannot be before block date.</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Query Detail</label>
+            <textarea class="form-control form-control-sm" formControlName="sonQueryDetail" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-primary btn-sm" (click)="onSave()" [disabled]="form.invalid || form.disabled">Save</button>
+    </div>
+  </form>
+</div>

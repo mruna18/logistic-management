@@ -1,0 +1,79 @@
+<div class="export-shipment-detail">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="badge bg-primary">Export</span>
+    <span class="badge" [ngClass]="statusBadgeClass()">{{ statusLabel() }}</span>
+  </div>
+
+  <ul class="nav nav-tabs nav-tabs-sm mb-2" role="tablist">
+    <li class="nav-item" *ngFor="let tab of tabs; trackBy: trackByTab" role="presentation">
+      <button
+        type="button"
+        class="nav-link py-1 px-3 small fw-semibold"
+        [class.active]="activeTab() === tab"
+        (click)="setActiveTab(tab)">
+        {{ tab }}
+      </button>
+    </li>
+  </ul>
+
+  <div class="mb-2">
+    <button type="button" class="btn btn-primary btn-sm" (click)="saveAll()">Save All</button>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-3">
+      @if (exportData(); as data) {
+        @switch (activeTab()) {
+          @case ('1. Order (Commercial)') {
+            <app-export-order-commercial
+              [initialValue]="data.orderCommercial"
+              [disabled]="disabled"
+              (save)="onOrderSave($event)">
+            </app-export-order-commercial>
+          }
+          @case ('2. Team & Documentation') {
+            <app-export-team-documentation
+              [initialValue]="data.teamDocumentation"
+              [disabled]="disabled"
+              (save)="onTeamSave($event)">
+            </app-export-team-documentation>
+          }
+          @case ('3. Transport & Stuffing') {
+            <app-export-transport-stuffing
+              [initialValue]="data.transportStuffing"
+              [shippingLineFromAbove]="data.teamDocumentation?.shippingLineName ?? ''"
+              [containerTypeFromAbove]="data.orderCommercial?.containerType ?? ''"
+              [disabled]="disabled"
+              (save)="onTransportSave($event)">
+            </app-export-transport-stuffing>
+          }
+          @case ('4. Inspections & Customs') {
+            <app-export-inspections-customs
+              [initialValue]="data.inspectionsCustoms"
+              [disabled]="disabled"
+              (save)="onInspectionsSave($event)">
+            </app-export-inspections-customs>
+          }
+          @case ('5. Terminal & Shipping') {
+            <app-export-terminal-shipping
+              [initialValue]="data.terminalShipping"
+              [lastContainerGatedIn]="lastContainerGatedIn()"
+              [shippingLineFromTransport]="data.transportStuffing?.shippingLine ?? ''"
+              [disabled]="disabled"
+              (save)="onTerminalSave($event)">
+            </app-export-terminal-shipping>
+          }
+          @case ('6. Documents & Closing') {
+            <app-export-documents-closing
+              [initialValue]="data.documentsClosing"
+              [disabled]="disabled"
+              (save)="onDocumentsSave($event)">
+            </app-export-documents-closing>
+          }
+        }
+      } @else {
+        <p class="text-muted small">Loading export data... Click Save to initialize.</p>
+      }
+    </div>
+  </div>
+</div>

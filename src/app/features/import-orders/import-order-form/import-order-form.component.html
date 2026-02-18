@@ -1,0 +1,658 @@
+<div class="container-fluid">
+  <h4 class="mb-3">{{ isEdit ? 'Edit' : 'New' }} {{ isExportJob() ? 'Export' : 'Import' }} Order</h4>
+
+  <div *ngIf="!isEdit && generatedOrderRef" class="alert alert-info py-2 mb-2 small">
+    Generated Order Ref: <strong>{{ generatedOrderRef }}</strong>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Job Type selector - always visible for switching between Import/Export -->
+    <div class="card shadow-sm mb-2">
+      <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-3">
+            <label class="form-label small mb-0">Job Type</label>
+            <select class="form-select form-select-sm" formControlName="jobType">
+              <option *ngFor="let t of jobTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="col-md-4" *ngIf="!isExportJob()">
+            <label class="form-label small mb-0">Order Reference <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" formControlName="orderReference" placeholder="Auto-generated or enter reference">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export flow: 6 windows -->
+    <div *ngIf="isExportJob()" class="export-order-section">
+      <app-export-shipment-detail
+        [shipmentId]="0"
+        [shipmentNo]="form.get('orderReference')?.value ?? ''"
+        [clientName]="form.get('buyerName')?.value ?? ''"
+        [orderReference]="form.get('orderReference')?.value ?? ''"
+        [disabled]="false">
+      </app-export-shipment-detail>
+    </div>
+
+    <!-- Import flow: 7 windows -->
+    <div *ngIf="!isExportJob()">
+    <ul class="nav nav-tabs mb-2" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window1')" (click)="activeWindow='window1'" type="button">1. Order</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window2')" (click)="activeWindow='window2'" type="button">2. Team & Documentation</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window3')" (click)="activeWindow='window3'" type="button">3. Origin Details</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window4')" (click)="activeWindow='window4'" type="button">4. Pre Arrival</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window5')" (click)="activeWindow='window5'" type="button">5. Terminal &amp; Shipping</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window6')" (click)="activeWindow='window6'" type="button">6. Customs &amp; Regulatory</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="isActiveWindow('window7')" (click)="activeWindow='window7'" type="button">7. Transport &amp; Delivery</button>
+      </li>
+    </ul>
+    <!-- Window 1: General Information -->
+    <div *ngIf="isActiveWindow('window1')">
+    <div class="card shadow-sm mb-2">
+      <div class="card-header py-2">
+        <h6 class="mb-0 small">General Information</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Order Reference <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" formControlName="orderReference" placeholder="Auto-generated or enter reference">
+            <div class="invalid-feedback d-block" *ngIf="form.get('orderReference')?.invalid && form.get('orderReference')?.touched">Required.</div>
+          </div>
+
+          <!-- <div class="col-md-4">
+            <label class="form-label small">Client / Buyer</label>
+            <input type="text" class="form-control form-control-sm" formControlName="clientName">
+          </div> -->
+          <div class="col-md-4">
+            <label class="form-label small">Buyer / Client (Approved)</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   placeholder="Start typing buyer name..."
+                   list="buyerList"
+                   (input)="filterBuyers($any($event.target).value)"
+                   (change)="onBuyerInput($any($event.target).value)"
+                   autocomplete="off">
+            <datalist id="buyerList">
+              <option *ngFor="let b of filteredBuyers" [value]="b.name"></option>
+            </datalist>
+            <input type="hidden" formControlName="buyerName">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small">Supplier <span class="text-danger">*</span></label>
+            <select class="form-select form-select-sm" formControlName="supplierName">
+              <option value="">-- Select supplier --</option>
+              <option value="Supplier A">Supplier A</option>
+              <option value="Supplier B">Supplier B</option>
+              <option value="Supplier C">Supplier C</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small">File Status</label>
+            <select class="form-select form-select-sm" formControlName="fileStatus">
+              <option *ngFor="let s of fileStatuses" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div *ngIf="form.get('fileStatus')?.value === 'Quoted'" class="col-md-3">
+            <label class="form-label small">Quoted Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="quotedDate">
+          </div>
+          <div *ngIf="form.get('fileStatus')?.value === 'Cancelled'" class="col-md-3">
+            <label class="form-label small">Cancelled Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="cancelledDate">
+          </div>
+          <div *ngIf="form.get('fileStatus')?.value === 'Approved'" class="col-md-3">
+            <label class="form-label small">Approved Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="approvedDate">
+          </div>
+          
+
+          <div class="col-md-3">
+            <label class="form-label small">Approval Mode</label>
+            <select class="form-select form-select-sm" formControlName="approvalMode">
+              <option *ngFor="let m of approvalModes" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Approval Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="approvalDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">PFI No. <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" formControlName="pfiNumber" placeholder="e.g. PFI-2024-001">
+            <div class="invalid-feedback d-block" *ngIf="form.get('pfiNumber')?.invalid && form.get('pfiNumber')?.touched">Required.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">PFI Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="pfiDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">SONCAP No.</label>
+            <input type="text" class="form-control form-control-sm" formControlName="soncapNumber" placeholder="SON">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">SONCAP Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="soncapDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">NAFDAC No.</label>
+            <input type="text" class="form-control form-control-sm" formControlName="nafdacNumber">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">NAFDAC Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="nafdacDate">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Insurance Cert. Date</label>
+            <input type="date" class="form-control form-control-sm" formControlName="insuranceCertificateDate">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Created At</label>
+            <input type="text" class="form-control form-control-sm" formControlName="createdAt" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card shadow-sm mb-2">
+        <div class="card-header py-2">
+          <h6 class="mb-0 small">Shipment &amp; Product Details</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="row g-2">
+            <div class="col-md-2">
+              <label class="form-label small">No. of Containers <span class="text-danger">*</span></label>
+              <input type="number" min="1" class="form-control form-control-sm" formControlName="numberOfContainers" placeholder="1">
+              <div class="invalid-feedback d-block" *ngIf="form.get('numberOfContainers')?.invalid && form.get('numberOfContainers')?.touched">Required.</div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" formControlName="partShipmentToBeCreated" id="partShipment">
+                <label class="form-check-label small" for="partShipment">Part shipment to be created</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Container Type</label>
+              <select class="form-select form-select-sm" formControlName="containerType">
+                <option value="">-- Select --</option>
+                <option *ngFor="let ct of containerTypes" [value]="ct">{{ ct }}</option>
+                <option [value]="CUSTOM_CONTAINER_VALUE">+ Create new type</option>
+              </select>
+              <div *ngIf="form.get('containerType')?.value === CUSTOM_CONTAINER_VALUE" class="input-group input-group-sm mt-1">
+                <input type="text"
+                       class="form-control form-control-sm"
+                       [(ngModel)]="customContainerInput"
+                       [ngModelOptions]="{standalone: true}"
+                       placeholder="Enter new container type"
+                       (keydown.enter)="addCustomContainerType(); $event.preventDefault()">
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="addCustomContainerType()">
+                  Add
+                </button>
+              </div>
+              <small class="text-muted" *ngIf="form.get('containerType')?.value === CUSTOM_CONTAINER_VALUE">
+                Type a name and click Add to add it to the list
+              </small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Product Description <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm" formControlName="productDescription" placeholder="Brief description of goods">
+              <div class="invalid-feedback d-block" *ngIf="form.get('productDescription')?.invalid && form.get('productDescription')?.touched">Required.</div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">HS Code <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm" formControlName="hsCode" placeholder="e.g. 8471.30">
+              <div class="invalid-feedback d-block" *ngIf="form.get('hsCode')?.invalid && form.get('hsCode')?.touched">Required.</div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Quantity <span class="text-danger">*</span></label>
+              <input type="number" min="0" class="form-control form-control-sm" formControlName="quantity" placeholder="0">
+              <div class="invalid-feedback d-block" *ngIf="form.get('quantity')?.invalid && form.get('quantity')?.touched">Required.</div>
+            </div>
+  
+            <div class="col-md-3">
+              <label class="form-label small">Mode of Shipment</label>
+              <select class="form-select form-select-sm" formControlName="shipmentMode">
+                <option *ngFor="let m of shipmentModes" [value]="m">{{ m }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Shipment Type</label>
+              <select class="form-select form-select-sm" formControlName="shipmentType">
+                <option *ngFor="let st of shipmentTypes" [value]="st">{{ st }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Commercial Values -->
+      <div class="card shadow-sm mb-2">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 small">Commercial Values (₦)</h6>
+          <small class="text-muted">CIF = Ex-Works + FOB + Freight + Insurance (1.5% × 1.1)</small>
+        </div>
+        <div class="card-body p-2">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-2">
+              <label class="form-label small">Ex-Works <span class="text-danger">*</span></label>
+              <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="exWorks" placeholder="0">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">FOB <span class="text-danger">*</span></label>
+              <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="fob" placeholder="0">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Freight <span class="text-danger">*</span></label>
+              <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="freight" placeholder="0">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">C &amp; F</label>
+              <input type="number" class="form-control form-control-sm text-end" formControlName="cnf" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Marine Insurance</label>
+              <input type="number" class="form-control form-control-sm text-end" formControlName="marineInsurance" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Total CIF</label>
+              <input type="number" class="form-control form-control-sm text-end" formControlName="totalCif" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Scope & Additional Details -->
+      <div class="card shadow-sm mb-2">
+        <div class="card-header py-2">
+          <h6 class="mb-0 small">Scope &amp; Additional Details</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label small d-block mb-1">Scope of Job</label>
+              <div class="d-flex flex-wrap gap-2">
+                <ng-container *ngFor="let scope of jobScopes">
+                  <div class="form-check form-check-inline small">
+                    <input class="form-check-input" type="checkbox" (change)="toggleJobScope(scope, $event)">
+                    <label class="form-check-label">{{ scope }}</label>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small">Additional File Details</label>
+              <textarea rows="2" class="form-control form-control-sm" formControlName="additionalDetails" placeholder="Any extra notes or special instructions"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Operational mapping (legacy) -->
+      <div class="card shadow-sm mb-2">
+        <div class="card-header py-2">
+          <h6 class="mb-0 small">Operational Mapping (Internal)</h6>
+        </div>
+        <div class="card-body p-2">
+          <div class="row g-2">
+            <div class="col-md-3">
+              <label class="form-label small">Product Type <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="productType">
+                <option value="">-- Select Product Type --</option>
+                <option *ngFor="let type of productTypes" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small">Allocation Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control form-control-sm" formControlName="allocationDate">
+              <div class="invalid-feedback d-block" *ngIf="form.get('allocationDate')?.invalid && form.get('allocationDate')?.touched">Required.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Clearing Type <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="clearingType">
+                <option value="">-- Select Clearing Type --</option>
+                <option *ngFor="let type of clearingTypes" [value]="type">{{ type }}</option>
+              </select>
+              <div class="invalid-feedback d-block" *ngIf="form.get('clearingType')?.invalid && form.get('clearingType')?.touched">Required.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Window 2: Team & Documentation -->
+    <div *ngIf="isActiveWindow('window2')" class="window2-container">
+      <!-- Team Assignment -->
+      <div class="card window2-card">
+        <div class="card-header window2-card-header">
+          <h6 class="mb-0 fw-semibold">Team Assignment</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Sales Owner</label>
+              <input class="form-control" formControlName="salesOwner" placeholder="Assign sales person">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Customer Service Owner</label>
+              <input class="form-control" formControlName="customerServiceOwner" placeholder="Assign CS owner">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Clearing Agent</label>
+              <input class="form-control" formControlName="clearingAgent" placeholder="Assign clearing agent">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">File Closed for Invoicing</label>
+              <input type="date" class="form-control" formControlName="fileClosedForInvoicingDate">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Requirements -->
+      <div class="card window2-card">
+        <div class="card-header window2-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div class="d-flex align-items-center">
+            <h6 class="mb-0 fw-semibold">Document Requirements</h6>
+            <span class="badge bg-secondary ms-2">8 documents</span>
+          </div>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn" [class.btn-primary]="docViewMode === 'card'" [class.btn-outline-secondary]="docViewMode !== 'card'" (click)="docViewMode = 'card'" title="Card view">
+              Card
+            </button>
+            <button type="button" class="btn" [class.btn-primary]="docViewMode === 'list'" [class.btn-outline-secondary]="docViewMode !== 'list'" (click)="docViewMode = 'list'" title="List view">
+              List
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <!-- Card View -->
+          <div *ngIf="docViewMode === 'card'" formGroupName="documents" class="doc-cards-grid p-3">
+            <ng-container *ngFor="let docName of documentNames">
+              <div [formGroupName]="docName" class="doc-card">
+                <div class="doc-card-header">
+                  <span class="doc-card-title">{{ formatDocName(docName) }}</span>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" formControlName="required" [id]="docName + '_req_card'">
+                    <label class="form-check-label small" [attr.for]="docName + '_req_card'">Required</label>
+                  </div>
+                </div>
+                <div class="doc-card-body">
+                  <div class="doc-card-field">
+                    <label class="form-label small">Date Processed</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="processedDate">
+                  </div>
+                  <div class="doc-card-field">
+                    <label class="form-label small">Date Received</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
+                  </div>
+                  <div class="doc-card-field">
+                    <label class="form-label small">Processed By</label>
+                    <div class="btn-group btn-group-sm processed-by-group w-100" role="group">
+                      <input type="radio" class="btn-check" formControlName="processedBy" [id]="docName + '_client_card'" [value]="DocumentParty.CLIENT">
+                      <label class="btn btn-outline-secondary flex-grow-1" [attr.for]="docName + '_client_card'">Client</label>
+                      <input type="radio" class="btn-check" formControlName="processedBy" [id]="docName + '_agent_card'" [value]="DocumentParty.AGENT">
+                      <label class="btn btn-outline-secondary flex-grow-1" [attr.for]="docName + '_agent_card'">Agent</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <!-- List View -->
+          <div *ngIf="docViewMode === 'list'" formGroupName="documents" class="table-responsive">
+            <table class="table table-hover doc-requirements-table mb-0">
+              <thead>
+                <tr>
+                  <th class="doc-col-document">Document</th>
+                  <th class="doc-col-required text-center">Required</th>
+                  <th class="doc-col-date">Date Processed</th>
+                  <th class="doc-col-date">Date Received</th>
+                  <th class="doc-col-processed">Processed By</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let docName of documentNames">
+                  <tr [formGroupName]="docName" class="doc-row">
+                    <td class="doc-col-document align-middle">
+                      <span class="doc-name">{{ formatDocName(docName) }}</span>
+                    </td>
+                    <td class="doc-col-required text-center align-middle">
+                      <div class="form-check form-switch d-inline-block">
+                        <input class="form-check-input" type="checkbox" formControlName="required" [id]="docName + '_req'">
+                        <label class="form-check-label visually-hidden" [attr.for]="docName + '_req'">Required</label>
+                      </div>
+                    </td>
+                    <td class="doc-col-date align-middle">
+                      <input type="date" class="form-control form-control-sm" formControlName="processedDate">
+                    </td>
+                    <td class="doc-col-date align-middle">
+                      <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
+                    </td>
+                    <td class="doc-col-processed align-middle">
+                      <div class="btn-group btn-group-sm processed-by-group" role="group">
+                        <input type="radio" class="btn-check" formControlName="processedBy" [id]="docName + '_client'" [value]="DocumentParty.CLIENT">
+                        <label class="btn btn-outline-secondary" [attr.for]="docName + '_client'">Client</label>
+                        <input type="radio" class="btn-check" formControlName="processedBy" [id]="docName + '_agent'" [value]="DocumentParty.AGENT">
+                        <label class="btn btn-outline-secondary" [attr.for]="docName + '_agent'">Agent</label>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <div class="p-3 border-top bg-light">
+            <div class="row g-3 align-items-end">
+              <div class="col-auto">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" formControlName="documentationVettingDone" id="vetDone">
+                  <label class="form-check-label" for="vetDone">Documentation vetting completed</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Vetting Date</label>
+                <input type="date" class="form-control" formControlName="documentationVettingDate">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Checked By</label>
+                <input class="form-control" formControlName="documentationVettingCheckedBy" placeholder="Reviewer name">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form M & Payment -->
+      <div class="card window2-card">
+        <div class="card-header window2-card-header">
+          <h6 class="mb-0 fw-semibold">Form M & Payment</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Form M Bank</label>
+              <input class="form-control" formControlName="formMBank" placeholder="Bank name">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Form M Type</label>
+              <select class="form-select" formControlName="formMType">
+                <option *ngFor="let t of formMTypes" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Payment Mode</label>
+              <select class="form-select" formControlName="paymentMode">
+                <option *ngFor="let p of paymentModesList" [value]="p">{{ p }}</option>
+              </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Form M No.</label>
+              <input class="form-control" formControlName="formMNumber" placeholder="Form M number">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">BA No.</label>
+              <input class="form-control" formControlName="baNumber" placeholder="BA number">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Applied to Bank Date</label>
+              <input type="date" class="form-control" formControlName="formMAppliedDate">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Bank Submitted to NCS Date</label>
+              <input type="date" class="form-control" formControlName="formMBankSubmittedDate">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">NCS Approved Date</label>
+              <input type="date" class="form-control" formControlName="formMNcsApprovedDate">
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label">Form M Approved Date</label>
+              <input type="date" class="form-control" formControlName="formMApprovedDate">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Special Remarks</label>
+              <textarea class="form-control" formControlName="formMSpecialRemarks" rows="2" placeholder="Additional notes for Form M or payment"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Window 3: Origin Details (D2D / Documentation Client) -->
+    <div *ngIf="isActiveWindow('window3')" class="window2-container">
+      <app-origin-details
+        [formMApprovalDate]="getFormMApprovalDate()"
+        [initialValue]="originDetailsData"
+        (save)="onOriginDetailsSave($event)">
+      </app-origin-details>
+    </div>
+
+    <!-- Window 4: Pre Arrival -->
+    <div *ngIf="isActiveWindow('window4')" class="window2-container">
+      <app-pre-arrival
+        [paymentMode]="form.get('paymentMode')?.value"
+        [atd]="originDetailsData?.atd ?? null"
+        [autoEta]="preArrivalData?.eta ?? terminalShippingData?.ata ?? null"
+        [autoShippingLine]="originDetailsData?.shippingLine ?? terminalShippingData?.shippingLine ?? null"
+        [autoTerminalName]="terminalShippingData?.terminalName ?? null"
+        [initialValue]="preArrivalData"
+        (save)="onPreArrivalSave($event)">
+      </app-pre-arrival>
+    </div>
+
+    <!-- Window 5: Terminal & Shipping -->
+    <div *ngIf="isActiveWindow('window5')" class="window2-container">
+      <app-terminal-shipping
+        [initialValue]="terminalShippingData"
+        [transportData]="getTerminalTransportData()"
+        (save)="onTerminalShippingSave($event)">
+      </app-terminal-shipping>
+    </div>
+
+    <!-- Window 6: Customs & Regulatory Bodies -->
+    <div *ngIf="isActiveWindow('window6')" class="window2-container">
+      <app-customs-regulatory
+        [initialValue]="customsRegulatoryData"
+        [dutyReceiptReceivedDate]="preArrivalData?.dutyReceiptReceivedDate ?? null"
+        (save)="onCustomsRegulatorySave($event)">
+      </app-customs-regulatory>
+    </div>
+
+    <!-- Window 7: Transport & Delivery -->
+    <div *ngIf="isActiveWindow('window7')" class="window2-container">
+      <app-transport-delivery
+        [initialValue]="transportDeliveryData"
+        [terminalData]="getTransportTerminalData()"
+        [dutyReceiptReceivedDate]="preArrivalData?.dutyReceiptReceivedDate ?? null"
+        (save)="onTransportDeliverySave($event)">
+      </app-transport-delivery>
+    </div>
+
+    <!-- Additional Fields -->
+    <div class="card shadow-sm mb-2">
+      <div class="card-header py-2 d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-0 small">Additional Fields</h6>
+          <small class="text-muted">Add custom key-value fields for order-specific data</small>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addCustomField()">+ Add Field</button>
+      </div>
+      <div class="card-body p-2">
+        <div *ngIf="customFields.length === 0" class="text-center py-4 border rounded bg-light">
+          <p class="text-muted small mb-2">No additional fields yet.</p>
+          <p class="text-muted small mb-0">Click <strong>+ Add Field</strong> to add custom labels (e.g. Special Instructions, Reference No.) with values.</p>
+        </div>
+        <div *ngIf="customFields.length > 0" class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th style="width: 40px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ctrl of customFields.controls; let i = index" [formGroup]="$any(ctrl)">
+                <td>
+                  <input type="text" class="form-control form-control-sm" formControlName="label" placeholder="e.g. Special Instructions">
+                  <div class="invalid-feedback d-block" *ngIf="$any(ctrl).get('label')?.invalid && $any(ctrl).get('label')?.touched">Label required.</div>
+                </td>
+                <td>
+                  <select class="form-select form-select-sm" formControlName="type">
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="boolean">Yes / No</option>
+                    <option value="email">Email</option>
+                  </select>
+                </td>
+                <td>
+                  <ng-container [ngSwitch]="$any(ctrl).get('type')?.value">
+                    <input *ngSwitchCase="'text'" type="text" class="form-control form-control-sm" formControlName="value" placeholder="Enter text">
+                    <input *ngSwitchCase="'number'" type="number" class="form-control form-control-sm" formControlName="value" placeholder="0">
+                    <input *ngSwitchCase="'date'" type="date" class="form-control form-control-sm" formControlName="value">
+                    <select *ngSwitchCase="'boolean'" class="form-select form-select-sm" formControlName="value">
+                      <option value="">-- Select --</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                    <input *ngSwitchCase="'email'" type="email" class="form-control form-control-sm" formControlName="value" placeholder="email@example.com">
+                    <input *ngSwitchDefault type="text" class="form-control form-control-sm" formControlName="value" placeholder="Enter value">
+                  </ng-container>
+                </td>
+                <td class="text-end align-middle">
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeCustomField(i)" title="Remove field">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3 mb-4">
+      <button type="submit" class="btn btn-primary btn-sm" [disabled]="(!isExportJob() && form.invalid)">Save</button>
+      <button type="button" class="btn btn-secondary btn-sm ms-2" (click)="cancel()">Cancel</button>
+    </div>
+    </div>
+  </form>
+</div>
+

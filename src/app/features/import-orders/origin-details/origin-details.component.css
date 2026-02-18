@@ -1,0 +1,8 @@
+.origin-details .card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.origin-details .form-label.small {
+  margin-bottom: 0.15rem;
+}

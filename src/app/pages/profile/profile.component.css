@@ -1,0 +1,35 @@
+.profile-page {
+  max-width: 600px;
+}
+
+.profile-header {
+  margin-bottom: 1.5rem;
+}
+
+.profile-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.avatar-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fd7e14 0%, #f59e0b 100%);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.profile-avatar + dl dt {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.profile-avatar + dl dd {
+  margin-bottom: 0.75rem;
+}

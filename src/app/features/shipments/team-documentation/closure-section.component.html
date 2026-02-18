@@ -1,0 +1,33 @@
+<div class="card shadow-sm mb-3 p-2" [formGroup]="closureForm">
+  <h6 class="fw-semibold text-muted small mb-2">File Closure Control</h6>
+  <div class="row g-2">
+    <div class="col-md-2 d-flex align-items-end mb-2">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="fecdUpdated" formControlName="fecdUpdated">
+        <label class="form-check-label small text-muted" for="fecdUpdated">
+          FECD Updated
+        </label>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small text-muted mb-1">EIR Date</label>
+      <input type="date" class="form-control form-control-sm" formControlName="eirDate">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small text-muted mb-1">Waybill Date</label>
+      <input type="date" class="form-control form-control-sm" formControlName="waybillDate">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small text-muted mb-1">Terminal Refund Date</label>
+      <input type="date" class="form-control form-control-sm" formControlName="terminalRefundDate">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small text-muted mb-1">Shipping Refund Date</label>
+      <input type="date" class="form-control form-control-sm" formControlName="shippingRefundDate">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small text-muted mb-1">File Closed Date</label>
+      <input type="date" class="form-control form-control-sm" formControlName="fileClosedDate">
+    </div>
+  </div>
+</div>
