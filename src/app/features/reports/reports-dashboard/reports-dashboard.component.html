@@ -1,0 +1,126 @@
+<div class="reports-dashboard">
+  <div class="dashboard-header">
+    <h1>Reporting & Analytics</h1>
+    <p class="text-muted">Dynamic reports with filters, export, and saved templates</p>
+  </div>
+
+  <div class="dashboard-body">
+    <div class="category-nav">
+      @for (cat of categories; track cat.value) {
+        <button
+          type="button"
+          class="category-btn"
+          [class.active]="activeCategory === cat.value"
+          (click)="onCategoryChange(cat.value)">
+          {{ cat.label }}
+        </button>
+      }
+    </div>
+
+    <div class="reports-grid">
+      <div class="report-list">
+        @for (r of reports; track r.id) {
+          <div
+            class="report-card"
+            [class.selected]="selectedReport?.id === r.id"
+            (click)="selectReport(r)">
+            <span class="report-card-icon"><app-sidebar-icon [name]="r.icon" /></span>
+            <div class="report-card-body">
+              <h4>{{ r.title }}</h4>
+              <p>{{ r.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="report-view">
+        @if (selectedReport) {
+          <div class="report-view-header sticky-bar">
+            <h3>{{ selectedReport.title }}</h3>
+            <div class="report-actions">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                  Download
+                </button>
+                <ul class="dropdown-menu">
+                  <li><button class="dropdown-item" type="button" (click)="export('csv')">CSV</button></li>
+                  <li><button class="dropdown-item" type="button" (click)="export('excel')">Excel</button></li>
+                  <li><button class="dropdown-item" type="button" (click)="export('pdf')">PDF</button></li>
+                </ul>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="openSaveTemplate()">
+                Save Template
+              </button>
+            </div>
+          </div>
+
+          <app-report-filter
+            [filterState]="filterState"
+            [clients]="filterOptions.clients"
+            [terminals]="filterOptions.terminals"
+            [shippingLines]="filterOptions.shippingLines"
+            (filterChange)="onFilterChange($event)"
+            (apply)="onApplyFilter()">
+          </app-report-filter>
+
+          @if (isLoading) {
+            <div class="loading-state">Loading report...</div>
+          } @else {
+            <div class="report-content">
+              @if (selectedReport.supportsChart && reportData.chartData && hasChartDatasets(reportData.chartData)) {
+                <div class="chart-section">
+                  <app-report-chart
+                    [type]="selectedReport.chartType ?? 'bar'"
+                    [data]="$any(reportData.chartData)"
+                    [height]="240">
+                  </app-report-chart>
+                </div>
+              }
+              <div class="table-section">
+                <app-report-table
+                  [rows]="reportData.rows"
+                  [columns]="selectedReport.columns"
+                  [sortField]="sortField"
+                  [sortDirection]="sortDirection"
+                  [pageSize]="20"
+                  (sortChange)="onSortChange($event)">
+                </app-report-table>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state">
+            <p>Select a report from the left to view data</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (showSaveTemplateModal) {
+  <div class="modal-overlay" (click)="showSaveTemplateModal = false">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save Report Template</h5>
+          <button type="button" class="btn-close" (click)="showSaveTemplateModal = false"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Template Name</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="templateName"
+            placeholder="My Custom Report">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showSaveTemplateModal = false">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="saveTemplate()" [disabled]="!templateName.trim()">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

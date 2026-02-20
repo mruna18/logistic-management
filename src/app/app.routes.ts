@@ -13,6 +13,7 @@ import { ClearanceComponent } from './features/clearance/clearance.component';
 import { DeliveryComponent } from './features/delivery/delivery.component';
 import { FinanceComponent } from './features/finance/finance.component';
 import { DocumentsComponent } from './features/documents/documents.component';
+import { ReportsDashboardComponent } from './features/reports/reports-dashboard/reports-dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -36,6 +37,7 @@ export const routes: Routes = [
       { path: 'delivery', component: DeliveryComponent },
       { path: 'finance', component: FinanceComponent },
       { path: 'documents', component: DocumentsComponent },
+      { path: 'reports', component: ReportsDashboardComponent },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
     ]
   },

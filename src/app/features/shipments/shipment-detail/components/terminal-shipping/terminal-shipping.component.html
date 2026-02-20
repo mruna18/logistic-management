@@ -57,7 +57,9 @@
 
         <h6 class="fw-semibold small text-muted mb-2 mt-3 d-flex align-items-center justify-content-between">
           <span>Terminal DN</span>
-          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" (click)="showAdditionalTerminalDn = !showAdditionalTerminalDn" [title]="showAdditionalTerminalDn ? 'Hide' : 'Add more DN dates'">+</button>
+          <div>
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" (click)="addAdditionalTerminalDn()" title="Add DN">+</button>
+          </div>
         </h6>
         <div class="row g-2">
           <div class="col-md-4">
@@ -75,18 +77,23 @@
             <small class="text-muted d-block">Typically 4 days free from container landed</small>
           </div>
         </div>
-        <div class="row g-2 mt-1" *ngIf="showAdditionalTerminalDn">
-          <div class="col-md-4">
-            <label class="form-label small">DN 2 Received</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnReceived">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">DN 2 Paid</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnPaid">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Valid Till 2</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalValidTill">
+        <div formArrayName="additionalTerminalDns">
+          <div class="row g-2 mt-1" *ngFor="let grp of additionalTerminalDns.controls; let i = index" [formGroupName]="i">
+            <div class="col-md-4">
+              <label class="form-label small">DN {{ i + 2 }} Received</label>
+              <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnReceived">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">DN {{ i + 2 }} Paid</label>
+              <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnPaid">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small">Valid Till {{ i + 2 }}</label>
+              <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalValidTill">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeAdditionalTerminalDn(i)" title="Remove">-</button>
+            </div>
           </div>
         </div>
 

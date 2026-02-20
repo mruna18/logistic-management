@@ -253,12 +253,8 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
         [dateNotBeforeValidator('terminalDnReceived', 'terminalDnPaid')],
       ],
       terminalValidTill: [null as string | null],
-      additionalTerminalDnReceived: [null as string | null],
-      additionalTerminalDnPaid: [
-        null as string | null,
-        [dateNotBeforeValidator('additionalTerminalDnReceived', 'additionalTerminalDnPaid')],
-      ],
-      additionalTerminalValidTill: [null as string | null],
+      // dynamic additional Terminal DN entries array
+      additionalTerminalDns: this.fb.array([]),
       examinationApplicable: [false],
       examinationBooked: [null as string | null, [examinationRequiredValidator()]],
       examinationDone: [
@@ -315,12 +311,21 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
       this.form.get('refundAppliedDate')?.updateValueAndValidity();
       this.form.get('refundAcknowledgementDate')?.updateValueAndValidity();
     });
+    // shipping refund toggle: when user selects Yes, require dates; when No, clear validators
+    this.form.get('shippingRefundApplicable')?.valueChanges.subscribe((v) => {
+      const required = v === true ? [Validators.required] : [];
+      this.form.get('shippingRefundAppliedDate')?.setValidators(required);
+      this.form.get('shippingRefundAckCopyType')?.setValidators(v === true ? [Validators.required] : []);
+      this.form.get('shippingRefundAckDate')?.setValidators(required);
+      this.form.get('shippingRefundAppliedDate')?.updateValueAndValidity();
+      this.form.get('shippingRefundAckCopyType')?.updateValueAndValidity();
+      this.form.get('shippingRefundAckDate')?.updateValueAndValidity();
+    });
   }
 
   private registerValueChangeHandlers(): void {
     const controls = [
       'terminalValidTill',
-      'additionalTerminalValidTill',
       'lastContainerLoadedOut',
       'shippingValidTill',
       'additionalShippingValidTill',
@@ -333,6 +338,86 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
       this.calculateFreeDayExpiryAlerts();
     });
     this.subscription = () => sub.unsubscribe();
+  }
+
+  get additionalTerminalDns() {
+    return this.form.get('additionalTerminalDns') as import('@angular/forms').FormArray;
+  }
+
+  createAdditionalTerminalEntry(data?: { received?: string | null; paid?: string | null; validTill?: string | null }) {
+    return this.fb.group({
+      additionalTerminalDnReceived: [data?.received ?? null],
+      additionalTerminalDnPaid: [
+        data?.paid ?? null,
+        [dateNotBeforeValidator('additionalTerminalDnReceived', 'additionalTerminalDnPaid')],
+      ],
+      additionalTerminalValidTill: [data?.validTill ?? null],
+    });
+  }
+
+  addAdditionalTerminalDn(data?: { received?: string | null; paid?: string | null; validTill?: string | null }) {
+    this.additionalTerminalDns.push(this.createAdditionalTerminalEntry(data));
+  }
+
+  // convenience adders for specific date types
+  addAdditionalTerminalReceived() {
+    this.addAdditionalTerminalDn({ received: null, paid: null, validTill: null });
+  }
+
+  addAdditionalTerminalPaid() {
+    this.addAdditionalTerminalDn({ received: null, paid: null, validTill: null });
+  }
+
+  addAdditionalTerminalValid() {
+    this.addAdditionalTerminalDn({ received: null, paid: null, validTill: null });
+  }
+
+  // Shipping dynamic entries
+  get additionalShippingDns() {
+    return this.form.get('additionalShippingDns') as import('@angular/forms').FormArray;
+  }
+
+  createAdditionalShippingEntry(data?: { received?: string | null; paid?: string | null; validTill?: string | null }) {
+    return this.fb.group({
+      additionalShippingDnReceived: [data?.received ?? null],
+      additionalShippingDnPaid: [
+        data?.paid ?? null,
+        [dateNotBeforeValidator('additionalShippingDnReceived', 'additionalShippingDnPaid')],
+      ],
+      additionalShippingValidTill: [data?.validTill ?? null],
+    });
+  }
+
+  addAdditionalShippingDn(data?: { received?: string | null; paid?: string | null; validTill?: string | null }) {
+    // ensure form control exists
+    if (!this.form.get('additionalShippingDns')) {
+      this.form.addControl('additionalShippingDns', this.fb.array([]));
+    }
+    this.additionalShippingDns.push(this.createAdditionalShippingEntry(data));
+  }
+
+  addAdditionalShippingReceived() {
+    this.addAdditionalShippingDn({ received: null, paid: null, validTill: null });
+  }
+
+  addAdditionalShippingPaid() {
+    this.addAdditionalShippingDn({ received: null, paid: null, validTill: null });
+  }
+
+  addAdditionalShippingValid() {
+    this.addAdditionalShippingDn({ received: null, paid: null, validTill: null });
+  }
+
+  removeAdditionalShippingDn(index: number) {
+    if (this.additionalShippingDns && index >= 0 && index < this.additionalShippingDns.length) {
+      this.additionalShippingDns.removeAt(index);
+    }
+  }
+
+  removeAdditionalTerminalDn(index: number) {
+    if (index >= 0 && index < this.additionalTerminalDns.length) {
+      this.additionalTerminalDns.removeAt(index);
+    }
   }
 
   private calculateTerminalRefund(): void {
@@ -355,10 +440,14 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
     const emptyReturnVal = emptyReturn || transportEmptyReturn || null;
 
     if (!latestValidity || !emptyReturnVal) {
+      // set the form control (do not emit validators) and update signal via subscription
+      this.form.get('shippingRefundApplicable')?.setValue(false, { emitEvent: false });
       this.shippingRefundApplicable.set(false);
       return;
     }
-    this.shippingRefundApplicable.set(new Date(emptyReturnVal) < new Date(latestValidity));
+    const expired = new Date(emptyReturnVal) < new Date(latestValidity);
+    this.form.get('shippingRefundApplicable')?.setValue(expired, { emitEvent: false });
+    this.shippingRefundApplicable.set(expired);
   }
 
   private calculateFinalInvoiceEligibility(): void {
@@ -374,12 +463,24 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private getLatestTerminalValidity(): string | null {
+    const candidates: string[] = [];
     const val1 = this.form.get('terminalValidTill')?.value;
-    const val2 = this.form.get('additionalTerminalValidTill')?.value;
-    if (!val1 && !val2) return null;
-    if (!val1) return val2;
-    if (!val2) return val1;
-    return new Date(val1) >= new Date(val2) ? val1 : val2;
+    if (val1) candidates.push(val1);
+    // include any dynamic additional terminal valid till dates
+    const arr = this.additionalTerminalDns || null;
+    if (arr && arr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        const v = arr.at(i)?.get('additionalTerminalValidTill')?.value;
+        if (v) candidates.push(v);
+      }
+    }
+    if (candidates.length === 0) return null;
+    // pick the latest date string
+    let latest = candidates[0];
+    for (const d of candidates) {
+      if (new Date(d) > new Date(latest)) latest = d;
+    }
+    return latest;
   }
 
   private getLatestShippingValidity(): string | null {
@@ -451,7 +552,21 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   patchValue(value: Partial<TerminalShippingModel>): void {
-    this.form.patchValue(value, { emitEvent: true });
+    // patch scalar values first
+    const scalar = { ...value };
+    // remove any singular additionalTerminal fields from scalar (we'll handle them separately)
+    delete (scalar as any).additionalTerminalDnReceived;
+    delete (scalar as any).additionalTerminalDnPaid;
+    delete (scalar as any).additionalTerminalValidTill;
+    this.form.patchValue(scalar, { emitEvent: true });
+    // if legacy singular additionalTerminal fields exist, migrate into dynamic array
+    if ((value as any)?.additionalTerminalDnReceived || (value as any)?.additionalTerminalDnPaid || (value as any)?.additionalTerminalValidTill) {
+      this.addAdditionalTerminalDn({
+        received: (value as any).additionalTerminalDnReceived ?? null,
+        paid: (value as any).additionalTerminalDnPaid ?? null,
+        validTill: (value as any).additionalTerminalValidTill ?? null,
+      });
+    }
     this.calculateTerminalRefund();
     this.calculateShippingRefund();
     this.calculateFinalInvoiceEligibility();
@@ -461,11 +576,14 @@ export class TerminalShippingComponent implements OnInit, OnDestroy, OnChanges {
   onSave(): void {
     if (this.form.invalid || this.form.disabled) return;
     const raw = this.form.getRawValue();
-    const payload: TerminalShippingModel = {
+    const payload: TerminalShippingModel & { additionalTerminalDns?: any[] } = {
       ...raw,
       refundApplicable: this.refundApplicable(),
       shippingRefundApplicable: this.shippingRefundApplicable(),
       finalInvoiceToBeProcessed: this.finalInvoiceToBeProcessed(),
+      // include the latest validity for backward compatibility and the full dynamic array
+      additionalTerminalValidTill: this.getLatestTerminalValidity(),
+      additionalTerminalDns: this.additionalTerminalDns?.value ?? [],
     };
     this.save.emit(payload);
   }

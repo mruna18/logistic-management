@@ -1,0 +1,62 @@
+<div class="report-table-wrapper">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover report-table">
+      <thead>
+        <tr>
+          @for (col of columns; track col.field) {
+            <th
+              [class.sortable]="col.sortable"
+              [class.sorted]="sortField === col.field"
+              [class.sort-desc]="sortField === col.field && sortDirection === 'desc'"
+              [style.width]="col.width"
+              (click)="col.sortable && onSort(col.field)">
+              {{ col.header }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of paginatedRows; track $index) {
+          <tr [class.risk-row]="isRiskRow(row)">
+            @for (col of columns; track col.field) {
+              <td [class.text-end]="col.type === 'number' || col.type === 'currency'">
+                @if (col.type === 'badge') {
+                  <span class="badge bg-secondary">{{ row[col.field] }}</span>
+                } @else {
+                  {{ formatCell(row, col) }}
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (rows.length === 0) {
+    <div class="empty-state">No data for selected filters</div>
+  }
+  @if (rows.length > pageSize) {
+    <div class="pagination-bar">
+      <span class="pagination-info">
+        {{ startRow }}-{{ endRow }} of {{ rows.length }}
+      </span>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage <= 1"
+          (click)="prevPage()">
+          Previous
+        </button>
+        <span class="page-indicator">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPage >= totalPages"
+          (click)="nextPage()">
+          Next
+        </button>
+      </div>
+    </div>
+  }
+</div>

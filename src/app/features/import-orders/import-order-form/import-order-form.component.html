@@ -16,10 +16,6 @@
               <option *ngFor="let t of jobTypes" [value]="t">{{ t }}</option>
             </select>
           </div>
-          <div class="col-md-4" *ngIf="!isExportJob()">
-            <label class="form-label small mb-0">Order Reference <span class="text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" formControlName="orderReference" placeholder="Auto-generated or enter reference">
-          </div>
         </div>
       </div>
     </div>

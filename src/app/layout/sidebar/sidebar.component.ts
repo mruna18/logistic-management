@@ -40,6 +40,7 @@ export class SidebarComponent {
     { path: '/delivery', label: 'Delivery', icon: 'truck' },
     { path: '/finance', label: 'Finance', icon: 'wallet' },
     { path: '/documents', label: 'Documents', icon: 'file' },
+    { path: '/reports', label: 'Reports', icon: 'reports' },
   ];
 
   toggle(): void {

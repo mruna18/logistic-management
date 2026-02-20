@@ -1,0 +1,209 @@
+<div class="reports-page">
+  <div class="reports-header">
+    <h1>Reports</h1>
+    <p class="text-muted">Analytics and insights for your logistics operations</p>
+  </div>
+
+  <div class="report-cards">
+    <div class="report-card" [class.expanded]="activeReport === 'orders'" (click)="selectReport('orders')">
+      <div class="report-card-header">
+        <span class="report-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/><path d="M3 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5z"/></svg></span>
+        <div>
+          <h3>Order Summary Report</h3>
+          <p>Orders by status and job type (Import/Export)</p>
+        </div>
+      </div>
+      @if (activeReport === 'orders') {
+        <div class="report-card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <app-chart-widget title="Orders by Status" type="bar" [data]="orderChartData" [height]="220" />
+            </div>
+            <div class="col-md-6">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th class="text-end">Import</th>
+                      <th class="text-end">Export</th>
+                      <th class="text-end">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (r of orderSummary; track r.status) {
+                      <tr>
+                        <td>{{ r.status }}</td>
+                        <td class="text-end">{{ r.import }}</td>
+                        <td class="text-end">{{ r.export }}</td>
+                        <td class="text-end fw-semibold">{{ r.total }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="report-card" [class.expanded]="activeReport === 'shipments'" (click)="selectReport('shipments')">
+      <div class="report-card-header">
+        <span class="report-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5v.793l.853.853A2.5 2.5 0 0 1 15 7.5v5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5v-9z"/></svg></span>
+        <div>
+          <h3>Shipment Status Report</h3>
+          <p>Shipments by stage and pipeline distribution</p>
+        </div>
+      </div>
+      @if (activeReport === 'shipments') {
+        <div class="report-card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <app-chart-widget title="Shipments by Stage" type="doughnut" [data]="shipmentChartData" [height]="220" />
+            </div>
+            <div class="col-md-6">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Stage</th>
+                      <th class="text-end">Count</th>
+                      <th class="text-end">%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (r of shipmentStatus; track r.stage) {
+                      <tr>
+                        <td>{{ r.stage }}</td>
+                        <td class="text-end">{{ r.count }}</td>
+                        <td class="text-end">{{ r.percentage }}%</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="report-card" [class.expanded]="activeReport === 'financial'" (click)="selectReport('financial')">
+      <div class="report-card-header">
+        <span class="report-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a1.99 1.99 0 0 1-1-.268z"/></svg></span>
+        <div>
+          <h3>Financial Summary Report</h3>
+          <p>Duty, demurrage, invoice exposure and refunds</p>
+        </div>
+      </div>
+      @if (activeReport === 'financial') {
+        <div class="report-card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <app-chart-widget title="Financial Exposure (₦M)" type="bar" [data]="financialChartData" [height]="220" />
+            </div>
+            <div class="col-md-6">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th class="text-end">Amount</th>
+                      <th class="text-end">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (r of financialSummary; track r.category) {
+                      <tr>
+                        <td>{{ r.category }}</td>
+                        <td class="text-end">{{ formatCurrency(r.amount) }}</td>
+                        <td class="text-end">{{ r.count ?? '-' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="report-card" [class.expanded]="activeReport === 'clearance'" (click)="selectReport('clearance')">
+      <div class="report-card-header">
+        <span class="report-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg></span>
+        <div>
+          <h3>Clearance Performance Report</h3>
+          <p>Average clearance times by phase and bottlenecks</p>
+        </div>
+      </div>
+      @if (activeReport === 'clearance') {
+        <div class="report-card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th class="text-end">Avg Days</th>
+                  <th class="text-end">Files</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of clearancePerformance; track r.phase) {
+                  <tr>
+                    <td>{{ r.phase }}</td>
+                    <td class="text-end">{{ r.avgDays }}</td>
+                    <td class="text-end">{{ r.files }}</td>
+                    <td>
+                      <span class="badge" [class]="r.trend === 'up' ? 'bg-warning' : r.trend === 'down' ? 'bg-success' : 'bg-secondary'">
+                        {{ r.trend }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="report-card" [class.expanded]="activeReport === 'clients'" (click)="selectReport('clients')">
+      <div class="report-card-header">
+        <span class="report-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/></svg></span>
+        <div>
+          <h3>Client Activity Report</h3>
+          <p>Client-wise file counts and clearance performance</p>
+        </div>
+      </div>
+      @if (activeReport === 'clients') {
+        <div class="report-card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th class="text-end">Active Files</th>
+                  <th class="text-end">Completed (Month)</th>
+                  <th class="text-end">Avg Clearance (Days)</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of clientActivity; track r.client) {
+                  <tr>
+                    <td>{{ r.client }}</td>
+                    <td class="text-end">{{ r.activeFiles }}</td>
+                    <td class="text-end">{{ r.completedThisMonth }}</td>
+                    <td class="text-end">{{ r.avgClearanceDays }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

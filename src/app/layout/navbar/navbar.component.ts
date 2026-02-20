@@ -43,6 +43,7 @@ export class NavbarComponent {
     { path: '/delivery', label: 'Delivery' },
     { path: '/finance', label: 'Finance' },
     { path: '/documents', label: 'Documents' },
+    { path: '/reports', label: 'Reports' },
   ];
 
   setLayoutMode(mode: 'sidebar' | 'header'): void {
