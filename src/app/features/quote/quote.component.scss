@@ -1,0 +1,152 @@
+// Quote page – professional logistics layout
+.quote-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.quote-form {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem;
+}
+
+.quote-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #0d6efd;
+
+  .quote-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.02em;
+  }
+
+  .quote-meta {
+    font-size: 0.875rem;
+    color: #495057;
+
+    p + p {
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+.quote-section {
+  margin-bottom: 1.25rem;
+
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 1.5rem;
+  align-items: start;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    input.form-control {
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.total label {
+      font-weight: 600;
+      color: #212529;
+    }
+
+    &.highlight-input input {
+      background-color: #fff9c4;
+    }
+
+    &.highlight-total input {
+      background-color: #e8f4fd;
+    }
+
+    &.final-quote {
+      grid-column: 1 / -1;
+
+      .final-quote-input {
+        font-size: 1.35rem;
+        background-color: #e8f4fd;
+        border: 2px solid #0d6efd;
+      }
+    }
+  }
+}
+
+.container-table {
+  margin: 0.75rem 0;
+
+  .table {
+    font-size: 0.8rem;
+
+    th {
+      font-weight: 600;
+      background-color: #f8f9fa;
+    }
+
+    td.text-end {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+.final-quote-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #0d6efd;
+
+  .section-title {
+    border-bottom-color: #0d6efd;
+  }
+}
+
+// Print styles – hide actions, show only quote content
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .quote-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .quote-form {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .quote-section {
+    break-inside: avoid;
+  }
+
+  .quote-header {
+    border-bottom-color: #000;
+  }
+
+  .final-quote-section {
+    border-top-color: #000;
+  }
+}

@@ -65,3 +65,37 @@ export interface PaginationState {
   pageSize: number;
   totalRows: number;
 }
+
+/** Row types for report data */
+export interface OrderSummaryRow {
+  status: string;
+  import: number;
+  export: number;
+  total: number;
+}
+
+export interface ShipmentStatusRow {
+  stage: string;
+  count: number;
+  percentage: number;
+}
+
+export interface FinancialSummaryRow {
+  category: string;
+  amount: number;
+  count?: number;
+}
+
+export interface ClearancePerformanceRow {
+  phase: string;
+  avgDays: number;
+  files: number;
+  trend: string;
+}
+
+export interface ClientActivityRow {
+  client: string;
+  activeFiles: number;
+  completedThisMonth: number;
+  avgClearanceDays: number;
+}

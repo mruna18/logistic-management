@@ -7,6 +7,7 @@ import { ControlTowerComponent } from './features/control-tower/control-tower.co
 import { ImportOrderListComponent } from './features/import-orders/import-order-list/import-order-list.component';
 import { ImportOrderFormComponent } from './features/import-orders/import-order-form/import-order-form.component';
 import { ImportOrderDetailComponent } from './features/import-orders/import-order-detail/import-order-detail.component';
+import { QuoteComponent } from './features/quote/quote.component';
 import { ShipmentListComponent } from './features/shipments/shipment-list/shipment-list.component';
 import { ContainerListComponent } from './features/containers/container-list/container-list.component';
 import { ClearanceComponent } from './features/clearance/clearance.component';
@@ -29,7 +30,9 @@ export const routes: Routes = [
       { path: 'import-orders', component: ImportOrderListComponent },
       { path: 'import-orders/new', component: ImportOrderFormComponent },
       { path: 'import-orders/:id', component: ImportOrderDetailComponent },
+      { path: 'import-orders/:id/quote', component: QuoteComponent },
       { path: 'import-orders/:id/edit', component: ImportOrderFormComponent },
+      { path: 'quote', component: QuoteComponent },
       { path: 'shipments', component: ShipmentListComponent },
       { path: 'shipments/:id', loadComponent: () => import('./features/shipments/shipment-detail/shipment-detail.component').then(m => m.ShipmentDetailComponent) },
       { path: 'containers', component: ContainerListComponent },
