@@ -57,8 +57,10 @@
 
         <h6 class="fw-semibold small text-muted mb-2 mt-3 d-flex align-items-center justify-content-between">
           <span>Terminal DN</span>
-          <div>
-            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" (click)="addAdditionalTerminalDn()" title="Add DN">+</button>
+          <div class="d-flex gap-1">
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalTerminalReceived()" title="Add Received date">+R</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalTerminalPaid()" title="Add Paid date">+P</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalTerminalValid()" title="Add Valid Till">+V</button>
           </div>
         </h6>
         <div class="row g-2">
@@ -240,12 +242,18 @@
           </div>
           <div class="col-md-2">
             <label class="form-label small">Shipping Refund Applicable</label>
-            <span class="badge" [ngClass]="shippingRefundBadgeClass()">{{ shippingRefundApplicable() ? 'Yes' : 'No' }}</span>
+            <select class="form-select form-select-sm" formControlName="shippingRefundApplicable">
+              <option [ngValue]="false">No</option>
+              <option [ngValue]="true">Yes</option>
+            </select>
             <small class="d-block text-muted mt-1">Shipping validity vs last empty return</small>
           </div>
           <div class="col-md-2">
             <label class="form-label small">Final Invoice to be Processed</label>
-            <span class="badge" [ngClass]="finalInvoiceBadgeClass()">{{ finalInvoiceToBeProcessed() ? 'Yes' : 'No' }}</span>
+            <select class="form-select form-select-sm" [value]="finalInvoiceToBeProcessed() ? 'true' : 'false'" (change)="finalInvoiceToBeProcessed.set($any($event.target).value === 'true')">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
             <small class="d-block text-muted mt-1">Shipping validity vs last empty return</small>
           </div>
         </div>

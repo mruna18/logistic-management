@@ -26,17 +26,12 @@
             <label class="form-label small">Terminal Valid Till</label>
             <input type="date" class="form-control form-control-sm" formControlName="terminalValidTill">
           </div>
-          <div class="col-md-2">
-            <label class="form-label small">Additional Terminal DN Received</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnReceived">
-          </div>
-          <div class="col-md-2">
-            <label class="form-label small">Additional Terminal DN Paid</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalDnPaid">
-          </div>
-          <div class="col-md-2">
-            <label class="form-label small">Additional Terminal Valid Till</label>
-            <input type="date" class="form-control form-control-sm" formControlName="additionalTerminalValidTill">
+          <div class="col-md-2 d-flex flex-column">
+            <label class="form-label small">Additional Terminal DN</label>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="addAdditionalTerminal()">Add</button>
+            </div>
+            <small class="text-muted">Use Add to create additional DN entries</small>
           </div>
           <div class="col-md-3">
             <label class="form-label small">Last Container Gated In</label>
@@ -45,6 +40,11 @@
           </div>
         </div>
         <h6 class="fw-semibold small text-muted mb-2">Shipping</h6>
+        <div class="mb-2 d-flex gap-1">
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalShipping()" title="Add Shipping DN">+DN</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalShipping()" title="Add Shipping Paid">+P</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" (click)="addAdditionalShipping()" title="Add Valid Till">+V</button>
+        </div>
         <div class="row g-2">
           <div class="col-md-2">
             <label class="form-label small">Shipping Line</label>
@@ -108,6 +108,25 @@
           <div class="col-md-2">
             <label class="form-label small">Additional Shipping Valid Till</label>
             <input type="date" class="form-control form-control-sm" formControlName="additionalShippingValidTill">
+          </div>
+          <div formArrayName="additionalShippingDns" *ngIf="form.get('additionalShippingDns')">
+            <div class="row g-2 mt-1" *ngFor="let grp of additionalShippingDns.controls; let i = index" [formGroupName]="i">
+              <div class="col-md-4">
+                <label class="form-label small">Shipping DN {{ i + 2 }} Received</label>
+                <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnReceived">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Shipping DN {{ i + 2 }} Paid</label>
+                <input type="date" class="form-control form-control-sm" formControlName="additionalShippingDnPaid">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Shipping Valid Till {{ i + 2 }}</label>
+                <input type="date" class="form-control form-control-sm" formControlName="additionalShippingValidTill">
+              </div>
+              <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeAdditionalShippingDn(i)" title="Remove">-</button>
+              </div>
+            </div>
           </div>
           <div class="col-md-3">
             <label class="form-label small">Draft OBL Received</label>

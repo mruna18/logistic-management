@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormsModule } from '@angular/forms';
 import type { ExportTerminalShippingModel } from '../../models/export-shipment.model';
 
 const TERMINALS = ['APMT', 'TICT', 'P&C', 'PTML'];
@@ -9,7 +9,7 @@ const SHIPPING_LINES = ['MSC', 'MAERSK', 'CMA CGM', 'Hapag-Lloyd', 'ONE', 'Everg
 @Component({
   selector: 'app-export-terminal-shipping',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,FormsModule],
   templateUrl: './export-terminal-shipping.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -27,6 +27,47 @@ export class ExportTerminalShippingComponent implements OnInit, OnChanges {
   readonly freightPaidByOptions = ['Client', 'Agent'] as const;
 
   constructor(private readonly fb: FormBuilder) {}
+
+  get additionalTerminalDns(): FormArray {
+    return this.form.get('additionalTerminalDns') as FormArray;
+  }
+
+  addAdditionalTerminal() {
+    const grp = this.fb.group({
+      additionalTerminalDnReceived: [null as string | null],
+      additionalTerminalDnPaid: [null as string | null],
+      additionalTerminalValidTill: [null as string | null],
+    });
+    this.additionalTerminalDns.push(grp);
+  }
+
+  // Shipping dynamic entries (additional shipping DN array)
+  get additionalShippingDns(): FormArray {
+    return (this.form.get('additionalShippingDns') as FormArray) || (this.form.get('additionalShippingDns') as FormArray);
+  }
+
+  createAdditionalShippingEntry(data?: { received?: string | null; paid?: string | null; validTill?: string | null }) {
+    return this.fb.group({
+      additionalShippingDnReceived: [data?.received ?? null],
+      additionalShippingDnPaid: [
+        data?.paid ?? null,
+        [/* reuse date validators if needed */],
+      ],
+      additionalShippingValidTill: [data?.validTill ?? null],
+    });
+  }
+
+  addAdditionalShipping() {
+    if (!this.form.get('additionalShippingDns')) {
+      this.form.addControl('additionalShippingDns', this.fb.array([]));
+    }
+    (this.form.get('additionalShippingDns') as FormArray).push(this.createAdditionalShippingEntry());
+  }
+
+  removeAdditionalShippingDn(index: number) {
+    const arr = this.form.get('additionalShippingDns') as FormArray;
+    if (arr && index >= 0 && index < arr.length) arr.removeAt(index);
+  }
 
   ngOnInit(): void {
     this.buildForm();
@@ -56,9 +97,8 @@ export class ExportTerminalShippingComponent implements OnInit, OnChanges {
       terminalDnReceived: [null as string | null],
       terminalDnPaid: [null as string | null],
       terminalValidTill: [null as string | null],
-      additionalTerminalDnReceived: [null as string | null],
-      additionalTerminalDnPaid: [null as string | null],
-      additionalTerminalValidTill: [null as string | null],
+      // support multiple additional terminal DN entries
+      additionalTerminalDns: this.fb.array([]),
       lastContainerGatedIn: [null as string | null],
       shippingLine: [''],
       vesselName: [''],
@@ -84,6 +124,15 @@ export class ExportTerminalShippingComponent implements OnInit, OnChanges {
 
   onSave(): void {
     if (this.form.disabled) return;
-    this.save.emit(this.form.getRawValue() as ExportTerminalShippingModel);
+    const raw = this.form.getRawValue();
+    // map additionalTerminalDns array into legacy fields if any (keep compatibility)
+    const payload = { ...(raw as any) } as ExportTerminalShippingModel & { additionalTerminalDns?: any[] };
+    if (raw.additionalTerminalDns && raw.additionalTerminalDns.length) {
+      payload.additionalTerminalDns = raw.additionalTerminalDns;
+      // set latest valid till for compatibility
+      const latest = raw.additionalTerminalDns.map((d: any) => d.additionalTerminalValidTill).filter(Boolean);
+      if (latest.length) payload.additionalTerminalValidTill = latest.reduce((a: string, b: string) => (new Date(a) > new Date(b) ? a : b));
+    }
+    this.save.emit(payload);
   }
 }
