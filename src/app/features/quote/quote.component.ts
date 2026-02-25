@@ -35,7 +35,6 @@ export class QuoteComponent implements OnInit {
   orderId: string | null = null;
   orderRef: string | null = null;
   clientName: string | null = null;
-  readonly containerRates = QUOTE_CONTAINER_RATES;
 
   ngOnInit(): void {
     this.buildForm();
@@ -93,8 +92,22 @@ export class QuoteComponent implements OnInit {
       tls: [{ value: 0, disabled: true }],
       vatOnDuty: [{ value: 0, disabled: true }],
 
-      container20: [0, Validators.min(0)],
-      container40: [0, Validators.min(0)],
+      clearing20Qty: [0, Validators.min(0)],
+      clearing40Qty: [0, Validators.min(0)],
+      terminal20Qty: [0, Validators.min(0)],
+      terminal40Qty: [0, Validators.min(0)],
+      shipping20Qty: [0, Validators.min(0)],
+      shipping40Qty: [0, Validators.min(0)],
+      transport20Qty: [0, Validators.min(0)],
+      transport40Qty: [0, Validators.min(0)],
+      clearing20Rate: [QUOTE_CONTAINER_RATES.clearing20, [Validators.min(0)]],
+      clearing40Rate: [QUOTE_CONTAINER_RATES.clearing40, [Validators.min(0)]],
+      terminal20Rate: [QUOTE_CONTAINER_RATES.terminal20, [Validators.min(0)]],
+      terminal40Rate: [QUOTE_CONTAINER_RATES.terminal40, [Validators.min(0)]],
+      shipping20Rate: [QUOTE_CONTAINER_RATES.shipping20, [Validators.min(0)]],
+      shipping40Rate: [QUOTE_CONTAINER_RATES.shipping40, [Validators.min(0)]],
+      transport20Rate: [QUOTE_CONTAINER_RATES.transport20, [Validators.min(0)]],
+      transport40Rate: [QUOTE_CONTAINER_RATES.transport40, [Validators.min(0)]],
       clearing20Total: [{ value: 0, disabled: true }],
       clearing40Total: [{ value: 0, disabled: true }],
       terminal20Total: [{ value: 0, disabled: true }],
@@ -104,6 +117,8 @@ export class QuoteComponent implements OnInit {
       transport20Total: [{ value: 0, disabled: true }],
       transport40Total: [{ value: 0, disabled: true }],
       truckDemurrage: [0],
+      sonCharges: [0, Validators.min(0)],
+      nafdacCharges: [0, Validators.min(0)],
       totalClearing: [{ value: 0, disabled: true }],
 
       disbursement: [{ value: 0, disabled: true }],
@@ -128,11 +143,15 @@ export class QuoteComponent implements OnInit {
     const containerCount = Number(order['containerCount'] ?? order['numberOfContainers'] ?? 1);
     const type = String(order['containerType'] ?? '').toLowerCase();
     if (type.includes('40')) {
-      patch['container40'] = containerCount;
-      patch['container20'] = 0;
+      patch['clearing40Qty'] = containerCount;
+      patch['terminal40Qty'] = containerCount;
+      patch['shipping40Qty'] = containerCount;
+      patch['transport40Qty'] = containerCount;
     } else {
-      patch['container20'] = containerCount;
-      patch['container40'] = 0;
+      patch['clearing20Qty'] = containerCount;
+      patch['terminal20Qty'] = containerCount;
+      patch['shipping20Qty'] = containerCount;
+      patch['transport20Qty'] = containerCount;
     }
     this.form.patchValue(patch, { emitEvent: false });
     this.recalculate();
@@ -142,7 +161,11 @@ export class QuoteComponent implements OnInit {
     const sourceControls = [
       'exWorks', 'fobCharges', 'freight', 'exchangeRate', 'exchangeRateForDuty', 'cifForDutyOverride',
       'insuranceRate', 'insuredPercent', 'dutyRate', 'financeRate', 'financeDays', 'financeManagementRate',
-      'container20', 'container40',
+      'clearing20Qty', 'clearing40Qty', 'terminal20Qty', 'terminal40Qty',
+      'shipping20Qty', 'shipping40Qty', 'transport20Qty', 'transport40Qty',
+      'sonCharges', 'nafdacCharges',
+      'clearing20Rate', 'clearing40Rate', 'terminal20Rate', 'terminal40Rate',
+      'shipping20Rate', 'shipping40Rate', 'transport20Rate', 'transport40Rate',
     ];
     sourceControls.forEach((name) => {
       const ctrl = this.form.get(name);
@@ -167,10 +190,28 @@ export class QuoteComponent implements OnInit {
       financeRate: Number(raw.financeRate) || 0,
       financeDays: Number(raw.financeDays) || 0,
       financeManagementRate: Number(raw.financeManagementRate) ?? 1,
-      container20: Number(raw.container20) || 0,
-      container40: Number(raw.container40) || 0,
-      truckDemurrage: Number(raw.truckDemurrage) || 0,
+      clearing20Qty: raw.clearing20Qty,
+      clearing40Qty: raw.clearing40Qty,
+      terminal20Qty: raw.terminal20Qty,
+      terminal40Qty: raw.terminal40Qty,
+      shipping20Qty: raw.shipping20Qty,
+      shipping40Qty: raw.shipping40Qty,
+      transport20Qty: raw.transport20Qty,
+      transport40Qty: raw.transport40Qty,
+      truckDemurrage: raw.truckDemurrage,
+      sonCharges: raw.sonCharges ?? 0,
+      nafdacCharges: raw.nafdacCharges ?? 0,
       telexCharges: Number(raw.telexCharges) || 0,
+      containerRates: {
+        clearing20: raw.clearing20Rate,
+        clearing40: raw.clearing40Rate,
+        terminal20: raw.terminal20Rate,
+        terminal40: raw.terminal40Rate,
+        shipping20: raw.shipping20Rate,
+        shipping40: raw.shipping40Rate,
+        transport20: raw.transport20Rate,
+        transport40: raw.transport40Rate,
+      },
     };
     const result = this.quoteService.calculate(inputs);
     this.patchCalculated(result);
@@ -216,8 +257,8 @@ export class QuoteComponent implements OnInit {
   downloadPdf(): void {
     const raw = this.form.getRawValue();
     const data: QuotePdfData = {
-      companyName: 'MAGNIFICO SYNERGIES LIMITED',
-      companyAddress: 'Logistics & Clearing Services',
+      companyName: undefined,
+      companyAddress: undefined,
       clientName: this.clientName ?? raw.supplier ?? undefined,
       ourRef: this.orderRef ?? undefined,
       yourRef: undefined,
@@ -235,10 +276,30 @@ export class QuoteComponent implements OnInit {
       insuredPercent: raw.insuredPercent,
       financeRate: raw.financeRate,
       financeDays: raw.financeDays,
-      container20: raw.container20,
-      container40: raw.container40,
+      containerQuantities: {
+        clearing20Qty: raw.clearing20Qty,
+        clearing40Qty: raw.clearing40Qty,
+        terminal20Qty: raw.terminal20Qty,
+        terminal40Qty: raw.terminal40Qty,
+        shipping20Qty: raw.shipping20Qty,
+        shipping40Qty: raw.shipping40Qty,
+        transport20Qty: raw.transport20Qty,
+        transport40Qty: raw.transport40Qty,
+      },
       truckDemurrage: raw.truckDemurrage,
+      sonCharges: raw.sonCharges ?? 0,
+      nafdacCharges: raw.nafdacCharges ?? 0,
       telexCharges: raw.telexCharges,
+      containerRates: {
+        clearing20: raw.clearing20Rate,
+        clearing40: raw.clearing40Rate,
+        terminal20: raw.terminal20Rate,
+        terminal40: raw.terminal40Rate,
+        shipping20: raw.shipping20Rate,
+        shipping40: raw.shipping40Rate,
+        transport20: raw.transport20Rate,
+        transport40: raw.transport40Rate,
+      },
       calculated: {
         totalFOB: raw.totalFOB,
         totalCNF: raw.totalCNF,
@@ -264,6 +325,8 @@ export class QuoteComponent implements OnInit {
         transport20Total: raw.transport20Total,
         transport40Total: raw.transport40Total,
         totalClearing: raw.totalClearing,
+        sonCharges: raw.sonCharges ?? 0,
+        nafdacCharges: raw.nafdacCharges ?? 0,
         disbursement: raw.disbursement,
         gmtFee: raw.gmtFee,
         subtotal: raw.subtotal,

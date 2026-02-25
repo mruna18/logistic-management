@@ -115,58 +115,67 @@
     <!-- 9) CONTAINER SECTION -->
     <section class="quote-section">
       <h2 class="section-title">9. Container Section</h2>
-      <div class="quote-grid">
-        <div class="field"><label>20ft Count</label><input type="number" min="0" class="form-control form-control-sm" formControlName="container20"></div>
-        <div class="field"><label>40ft Count</label><input type="number" min="0" class="form-control form-control-sm" formControlName="container40"></div>
-      </div>
+      <p class="small text-muted mb-2">Each row can have different 20ft/40ft quantities (per Excel layout).</p>
       <div class="container-table">
         <table class="table table-sm table-bordered mb-2">
           <thead>
-            <tr><th>Item</th><th>20ft Rate (&#8358;)</th><th>20ft Count</th><th>20ft Total</th><th>40ft Rate (&#8358;)</th><th>40ft Count</th><th>40ft Total</th></tr>
+            <tr><th>Item</th><th>20ft Rate (NGN)</th><th>20ft Qty</th><th>20ft Total</th><th>40ft Rate (NGN)</th><th>40ft Qty</th><th>40ft Total</th></tr>
           </thead>
           <tbody>
             <tr>
               <td>Clearing</td>
-              <td>{{ containerRates.clearing20 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="clearing20Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="clearing20Qty"></td>
               <td class="text-end">{{ form.get('clearing20Total')?.value | number:'1.2-2' }}</td>
-              <td>{{ containerRates.clearing40 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="clearing40Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="clearing40Qty"></td>
               <td class="text-end">{{ form.get('clearing40Total')?.value | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td>Terminal Rent</td>
-              <td>{{ containerRates.terminal20 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="terminal20Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="terminal20Qty"></td>
               <td class="text-end">{{ form.get('terminal20Total')?.value | number:'1.2-2' }}</td>
-              <td>{{ containerRates.terminal40 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="terminal40Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="terminal40Qty"></td>
               <td class="text-end">{{ form.get('terminal40Total')?.value | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td>Shipping Demurrage</td>
-              <td>{{ containerRates.shipping20 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="shipping20Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="shipping20Qty"></td>
               <td class="text-end">{{ form.get('shipping20Total')?.value | number:'1.2-2' }}</td>
-              <td>{{ containerRates.shipping40 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="shipping40Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="shipping40Qty"></td>
               <td class="text-end">{{ form.get('shipping40Total')?.value | number:'1.2-2' }}</td>
             </tr>
             <tr>
               <td>Local Transport</td>
-              <td>{{ containerRates.transport20 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="transport20Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="transport20Qty"></td>
               <td class="text-end">{{ form.get('transport20Total')?.value | number:'1.2-2' }}</td>
-              <td>{{ containerRates.transport40 | number:'1.2-2' }}</td>
-              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="transport40Rate"></td>
+              <td><input type="number" min="0" class="form-control form-control-sm text-center" formControlName="transport40Qty"></td>
               <td class="text-end">{{ form.get('transport40Total')?.value | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="quote-grid">
-        <div class="field"><label>Truck Demurrage (&#8358;)</label><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="truckDemurrage"></div>
-        <div class="field total"><label>Total Clearing (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('totalClearing')?.value)"></div>
+        <div class="field"><label>Truck Demurrage (NGN)</label><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="truckDemurrage"></div>
+        <div class="field total"><label>Total Clearing (NGN)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('totalClearing')?.value)"></div>
+      </div>
+      <div class="quote-grid mt-2">
+        <div class="field">
+          <label>SON (NGN)</label>
+          <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="sonCharges" placeholder="To be invoiced as per receipts">
+          <small class="text-muted">Standards Organisation of Nigeria. To be invoiced as per receipts.</small>
+        </div>
+        <div class="field">
+          <label>NAFDAC (NGN)</label>
+          <input type="number" min="0" class="form-control form-control-sm text-end" formControlName="nafdacCharges" placeholder="To be invoiced as per receipts">
+          <small class="text-muted">To be invoiced as per receipts.</small>
+        </div>
       </div>
     </section>
 

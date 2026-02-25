@@ -29,10 +29,23 @@ export interface QuoteCalculationInputs {
   financeDays: number;
   /** Finance Management fee rate % (default 1) = CIF Naira × rate % */
   financeManagementRate?: number;
-  container20: number;
-  container40: number;
+  /** Per-row quantities (Excel: each charge type can have different 20ft/40ft counts) */
+  clearing20Qty: number;
+  clearing40Qty: number;
+  terminal20Qty: number;
+  terminal40Qty: number;
+  shipping20Qty: number;
+  shipping40Qty: number;
+  transport20Qty: number;
+  transport40Qty: number;
   truckDemurrage?: number;
+  /** SON - Standards Organisation of Nigeria. To be invoiced as per receipts. */
+  sonCharges?: number;
+  /** NAFDAC - National Agency for Food and Drug Administration. To be invoiced as per receipts. */
+  nafdacCharges?: number;
   telexCharges?: number;
+  /** Optional: override container rates. When omitted, uses QUOTE_CONTAINER_RATES. */
+  containerRates?: Partial<Record<keyof typeof QUOTE_CONTAINER_RATES, number>>;
 }
 
 /** All calculated outputs */
@@ -61,6 +74,8 @@ export interface QuoteCalculationResult {
   transport20Total: number;
   transport40Total: number;
   totalClearing: number;
+  sonCharges: number;
+  nafdacCharges: number;
   disbursement: number;
   gmtFee: number;
   subtotal: number;
@@ -84,7 +99,17 @@ export class QuoteService {
    * Formulas as per specification; all amounts rounded to 2 decimal places.
    */
   calculate(inputs: QuoteCalculationInputs): QuoteCalculationResult {
-    const r = QUOTE_CONTAINER_RATES;
+    const cr = inputs.containerRates ?? {};
+    const r = {
+      clearing20: Number(cr.clearing20) || QUOTE_CONTAINER_RATES.clearing20,
+      clearing40: Number(cr.clearing40) || QUOTE_CONTAINER_RATES.clearing40,
+      terminal20: Number(cr.terminal20) || QUOTE_CONTAINER_RATES.terminal20,
+      terminal40: Number(cr.terminal40) || QUOTE_CONTAINER_RATES.terminal40,
+      shipping20: Number(cr.shipping20) || QUOTE_CONTAINER_RATES.shipping20,
+      shipping40: Number(cr.shipping40) || QUOTE_CONTAINER_RATES.shipping40,
+      transport20: Number(cr.transport20) || QUOTE_CONTAINER_RATES.transport20,
+      transport40: Number(cr.transport40) || QUOTE_CONTAINER_RATES.transport40,
+    };
     const exWorks = Number(inputs.exWorks) || 0;
     const fobCharges = Number(inputs.fobCharges) || 0;
     const freight = Number(inputs.freight) || 0;
@@ -94,9 +119,10 @@ export class QuoteService {
     const dutyRate = Number(inputs.dutyRate) || 0;
     const financeRate = Number(inputs.financeRate) || 0;
     const financeDays = Number(inputs.financeDays) || 0;
-    const c20 = Math.max(0, Math.floor(Number(inputs.container20) || 0));
-    const c40 = Math.max(0, Math.floor(Number(inputs.container40) || 0));
+    const q = (n: number) => Math.max(0, Math.floor(Number(n) || 0));
     const truckDemurrage = Number(inputs.truckDemurrage) || 0;
+    const sonCharges = round2(Number(inputs.sonCharges) || 0);
+    const nafdacCharges = round2(Number(inputs.nafdacCharges) || 0);
     const telexCharges = Number(inputs.telexCharges) || 0;
 
     const totalFOB = round2(exWorks + fobCharges);
@@ -129,15 +155,14 @@ export class QuoteService {
     const tls = round2(cif * 0.005);
     const vatOnDuty = round2(duty * 0.075);
 
-    const clearing20Total = round2(r.clearing20 * c20);
-    const clearing40Total = round2(r.clearing40 * c40);
-    // Terminal rent = rate × count (Excel: e.g. +C49*I49 for 20ft, +C50*I50 for 40ft)
-    const terminal20Total = round2(r.terminal20 * c20);
-    const terminal40Total = round2(r.terminal40 * c40);
-    const shipping20Total = round2(r.shipping20 * c20);
-    const shipping40Total = round2(r.shipping40 * c40);
-    const transport20Total = round2(r.transport20 * c20);
-    const transport40Total = round2(r.transport40 * c40);
+    const clearing20Total = round2(r.clearing20 * q(inputs.clearing20Qty));
+    const clearing40Total = round2(r.clearing40 * q(inputs.clearing40Qty));
+    const terminal20Total = round2(r.terminal20 * q(inputs.terminal20Qty));
+    const terminal40Total = round2(r.terminal40 * q(inputs.terminal40Qty));
+    const shipping20Total = round2(r.shipping20 * q(inputs.shipping20Qty));
+    const shipping40Total = round2(r.shipping40 * q(inputs.shipping40Qty));
+    const transport20Total = round2(r.transport20 * q(inputs.transport20Qty));
+    const transport40Total = round2(r.transport40 * q(inputs.transport40Qty));
     // totalClearing = sum of container section (clearing + terminal + shipping + transport only)
     const totalClearing = round2(
       clearing20Total + clearing40Total +
@@ -146,16 +171,16 @@ export class QuoteService {
       transport20Total + transport40Total
     );
 
-    // Disbursement = 30% on Duty + Clearing (Excel: rate on SUM(D39:D57) = duty + levies + clearing + truck demurrage)
-    const disbursementBase = duty + specialLevy + portLevy + fcs + tls + vatOnDuty + totalClearing + truckDemurrage;
-    const disbursement = round2(disbursementBase * 0.3);
+    // 10) Disbursement = 30% on Duty + Clearing
+    const disbursement = round2((duty + totalClearing) * 0.3);
+    // 11) GMT Management = 1% of C&F Value
     const gmtFee = round2(cnfNaira * 0.01);
 
-    // Subtotal = SUM(D32:D59): CIF + duty + levies + clearing + truck demurrage + disbursement + GMT
+    // 12) Subtotal = cif + duty + levies + clearing + disbursement + gmtFee (incl. truck demurrage, SON, NAFDAC)
     const subtotal = round2(
       cif + duty + specialLevy + portLevy +
       fcs + tls + vatOnDuty +
-      totalClearing + truckDemurrage + disbursement + gmtFee
+      totalClearing + truckDemurrage + sonCharges + nafdacCharges + disbursement + gmtFee
     );
     const maintenance = round2(subtotal * 0.002);
     const totalBeforeVat = round2(subtotal + maintenance);
@@ -188,6 +213,8 @@ export class QuoteService {
       transport20Total,
       transport40Total,
       totalClearing,
+      sonCharges,
+      nafdacCharges,
       disbursement,
       gmtFee,
       subtotal,

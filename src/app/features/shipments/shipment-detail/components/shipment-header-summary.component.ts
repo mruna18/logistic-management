@@ -9,7 +9,7 @@ import { ShipmentDetail } from '../models/shipment-detail.model';
   templateUrl: './shipment-header-summary.component.html'
 })
 export class ShipmentHeaderSummaryComponent {
-  @Input() shipment!: ShipmentDetail;
+  @Input() shipment: ShipmentDetail | null = null;
 
   getStatusBadgeClass(status: string): string {
     switch (status) {

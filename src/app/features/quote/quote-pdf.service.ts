@@ -29,10 +29,30 @@ export interface QuotePdfData {
   insuredPercent?: number;
   financeRate?: number;
   financeDays?: number;
-  container20?: number;
-  container40?: number;
   truckDemurrage?: number;
+  sonCharges?: number;
+  nafdacCharges?: number;
   telexCharges?: number;
+  containerQuantities?: {
+    clearing20Qty?: number;
+    clearing40Qty?: number;
+    terminal20Qty?: number;
+    terminal40Qty?: number;
+    shipping20Qty?: number;
+    shipping40Qty?: number;
+    transport20Qty?: number;
+    transport40Qty?: number;
+  };
+  containerRates?: {
+    clearing20?: number;
+    clearing40?: number;
+    terminal20?: number;
+    terminal40?: number;
+    shipping20?: number;
+    shipping40?: number;
+    transport20?: number;
+    transport40?: number;
+  };
   calculated: QuoteCalculationResult;
 }
 
@@ -42,73 +62,41 @@ const N2 = (n: number): string =>
 /** A4 width in mm (doc is created with format: 'a4') */
 const A4_WIDTH_MM = 210;
 
+/** Professional quotation colour palette - minimal & corporate */
+const COLORS = {
+  text: [45, 55, 72] as [number, number, number],
+  textMuted: [100, 116, 139] as [number, number, number],
+  accent: [71, 85, 105] as [number, number, number],
+  border: [226, 232, 240] as [number, number, number],
+  headerBg: [248, 250, 252] as [number, number, number],
+};
+
+/** Default container rates when not provided */
+const DEFAULT_RATES = {
+  clearing20: 75000,
+  clearing40: 95000,
+  terminal20: 145000,
+  terminal40: 225000,
+  shipping20: 155000,
+  shipping40: 275000,
+  transport20: 500000,
+  transport40: 600000,
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class QuotePdfService {
-  private readonly primaryColor: [number, number, number] = [13, 110, 253]; // Bootstrap primary
-  private readonly darkColor: [number, number, number] = [33, 37, 41];
-  private readonly lightGray: [number, number, number] = [248, 249, 250];
-
   generate(data: QuotePdfData, filename = 'quotation.pdf'): void {
     const doc: jsPDF = new jsPDF({ unit: 'mm', format: 'a4' });
     const getTableEndY = (fallbackY: number): number =>
       (doc as JsPDFWithAutoTable).lastAutoTable?.finalY ?? fallbackY;
     const pageW = A4_WIDTH_MM;
-    let y = 18;
+    const pageH = 297;
+    const margin = 18;
+    const colRight = pageW - margin;
+    let y = 15;
 
-    // ----- Header -----
-    doc.setFontSize(22);
-    doc.setTextColor(...this.primaryColor);
-    doc.setFont('helvetica', 'bold');
-    const company = data.companyName?.toUpperCase() || 'LOGISTICS QUOTATION';
-    doc.text(company, pageW / 2, y, { align: 'center' });
-    y += 6;
-
-    doc.setFontSize(14);
-    doc.setTextColor(...this.darkColor);
-    doc.text('QUOTATION', pageW / 2, y, { align: 'center' });
-    y += 4;
-
-    if (data.companyAddress) {
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(100, 100, 100);
-      doc.text(data.companyAddress, pageW / 2, y, { align: 'center' });
-      y += 5;
-    } else {
-      y += 2;
-    }
-
-    // ----- Client & ref block (two columns) -----
-    y += 2;
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...this.darkColor);
-
-    const leftCol = 20;
-    const rightCol = 110;
-    if (data.clientName) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('Client:', leftCol, y);
-      doc.setFont('helvetica', 'normal');
-      doc.text(String(data.clientName), leftCol + 22, y);
-      y += 6;
-    }
-    if (data.ourRef) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('Our ref:', leftCol, y);
-      doc.setFont('helvetica', 'normal');
-      doc.text(String(data.ourRef), leftCol + 22, y);
-      y += 5;
-    }
-    if (data.yourRef) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('Your ref:', leftCol, y);
-      doc.setFont('helvetica', 'normal');
-      doc.text(String(data.yourRef), leftCol + 22, y);
-      y += 5;
-    }
     const dateStr = data.date
       ? (data.date instanceof Date ? data.date : new Date(data.date)).toLocaleDateString('en-GB', {
           day: '2-digit',
@@ -116,22 +104,90 @@ export class QuotePdfService {
           year: 'numeric',
         })
       : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date:', rightCol, y - (data.yourRef ? 0 : 5));
-    doc.setFont('helvetica', 'normal');
-    doc.text(dateStr, rightCol + 15, (y -= data.yourRef ? 0 : 5));
-    y += 8;
 
-    // ----- General information -----
+    const cr = data.containerRates ?? {};
+    const r = {
+      clearing20: Number(cr.clearing20) || DEFAULT_RATES.clearing20,
+      clearing40: Number(cr.clearing40) || DEFAULT_RATES.clearing40,
+      terminal20: Number(cr.terminal20) || DEFAULT_RATES.terminal20,
+      terminal40: Number(cr.terminal40) || DEFAULT_RATES.terminal40,
+      shipping20: Number(cr.shipping20) || DEFAULT_RATES.shipping20,
+      shipping40: Number(cr.shipping40) || DEFAULT_RATES.shipping40,
+      transport20: Number(cr.transport20) || DEFAULT_RATES.transport20,
+      transport40: Number(cr.transport40) || DEFAULT_RATES.transport40,
+    };
+
+    const c = data.calculated;
+    const cq = data.containerQuantities ?? {};
+    const q = (n: number | undefined) => Math.max(0, Math.floor(Number(n) || 0));
+
+    const tableBase = {
+      margin: { left: margin, right: margin },
+      theme: 'plain' as const,
+      headStyles: {
+        fillColor: COLORS.headerBg,
+        textColor: COLORS.text,
+        fontStyle: 'bold',
+        fontSize: 8,
+        lineWidth: 0.1,
+        lineColor: COLORS.border,
+      },
+      bodyStyles: { fontSize: 8, textColor: COLORS.text, lineWidth: 0.1, lineColor: COLORS.border },
+    };
+
+    // ----- Two-column header: Company (left) | Quotation details (right) -----
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(...this.primaryColor);
-    doc.text('1. General information', 14, y);
+    doc.setFontSize(16);
+    doc.setTextColor(...COLORS.text);
+    const company = data.companyName?.trim() || data.supplier || 'Logistics Company';
+    doc.text(company, margin, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('QUOTATION', colRight, y, { align: 'right' });
     y += 6;
 
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.textMuted);
+    if (data.companyAddress?.trim()) {
+      doc.text(data.companyAddress.trim(), margin, y);
+    }
+    doc.text('Date: ' + dateStr, colRight, y, { align: 'right' });
+    if (data.ourRef) {
+      doc.text('Ref: ' + data.ourRef, colRight, y + 5, { align: 'right' });
+    }
+    y += data.companyAddress?.trim() ? 10 : 6;
+
+    // ----- To: Client -----
+    if (data.clientName) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(...COLORS.text);
+      doc.text('To:', margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(data.clientName), margin + 12, y);
+      y += 8;
+    } else {
+      y += 4;
+    }
+
+    doc.setDrawColor(...COLORS.border);
+    doc.setLineWidth(0.2);
+    doc.line(margin, y, colRight, y);
+    y += 8;
+
+    // ----- Order Details -----
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.accent);
+    doc.text('Order Details', margin, y);
+    y += 5;
+
     autoTable(doc, {
+      ...tableBase,
       startY: y,
-      head: [['Supplier', 'Country', 'Products', 'Quantity', 'Duty %', 'Rate N/$']],
+      head: [['Supplier', 'Country', 'Products', 'Qty', 'Duty %', 'Ex. Rate']],
       body: [
         [
           String(data.supplier ?? '—'),
@@ -142,70 +198,42 @@ export class QuotePdfService {
           N2(Number(data.exchangeRate) || 0),
         ],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
-      margin: { left: 14, right: 14 },
     });
     y = getTableEndY(y) + 6;
 
-    // ----- USD Costing -----
+    // ----- Cost Summary -----
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(...this.primaryColor);
-    doc.text('2. USD costing', 14, y);
-    y += 6;
-
-    const c = data.calculated;
-    autoTable(doc, {
-      startY: y,
-      head: [['Description', 'Amount (USD)']],
-      body: [
-        ['Ex Works', N2(data.exWorks ?? 0)],
-        ['FOB Charges', N2(data.fobCharges ?? 0)],
-        ['Freight', N2(data.freight ?? 0)],
-        ['Total FOB', N2(c.totalFOB)],
-        ['Total C&F', N2(c.totalCNF)],
-      ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 1: { halign: 'right' } },
-      margin: { left: 14, right: 14 },
-    });
-    y = getTableEndY(y) + 6;
-
-    // ----- Naira conversion, Insurance, CIF -----
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...this.primaryColor);
-    doc.text('3–5. Naira conversion, Insurance & CIF', 14, y);
-    y += 6;
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.accent);
+    doc.text('Cost Summary', margin, y);
+    y += 5;
 
     autoTable(doc, {
+      ...tableBase,
       startY: y,
-      head: [['Description', 'Amount (₦)']],
+      head: [['Description', 'USD', 'Description', 'NGN']],
       body: [
-        ['CNF Naira', N2(c.cnfNaira)],
-        ['Insurance', N2(c.insurance)],
-        ['CIF Naira', N2(c.cif)],
+        ['Ex Works', N2(data.exWorks ?? 0), 'CNF Naira', N2(c.cnfNaira)],
+        ['FOB Charges', N2(data.fobCharges ?? 0), 'Insurance', N2(c.insurance)],
+        ['Freight', N2(data.freight ?? 0), 'CIF Naira', N2(c.cif)],
+        ['Total C&F', N2(c.totalCNF), '—', '—'],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 1: { halign: 'right' } },
-      margin: { left: 14, right: 14 },
+      columnStyles: { 1: { halign: 'right' }, 3: { halign: 'right' } },
     });
     y = getTableEndY(y) + 6;
 
     // ----- LC, Finance, Customs -----
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...this.primaryColor);
-    doc.text('6–8. LC Commission, Finance & Customs', 14, y);
-    y += 6;
+    doc.setTextColor(...COLORS.accent);
+    doc.text('LC Commission, Finance & Customs', margin, y);
+    y += 5;
 
     autoTable(doc, {
+      ...tableBase,
       startY: y,
-      head: [['Description', 'Amount (₦)']],
+      head: [['Description', 'Amount (NGN)']],
       body: [
-        ['LC Commission Local', N2(c.lcLocal)],
-        ['LC Commission Offshore', N2(c.lcOffshore)],
+        ['LC Commission (Local + Offshore)', N2(c.lcLocal + c.lcOffshore)],
         ['Telex / Form M', N2(Number(data.telexCharges) || 0)],
         ['Finance Management', N2(c.financeManagement)],
         ['Finance Cost', N2(c.financeCost)],
@@ -216,100 +244,104 @@ export class QuotePdfService {
         ['TLS', N2(c.tls)],
         ['VAT on Duty', N2(c.vatOnDuty)],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
       columnStyles: { 1: { halign: 'right' } },
-      margin: { left: 14, right: 14 },
     });
     y = getTableEndY(y) + 6;
 
     // ----- Container section -----
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...this.primaryColor);
-    doc.text('9. Container section', 14, y);
-    y += 6;
+    doc.setTextColor(...COLORS.accent);
+    doc.text('Container Charges', margin, y);
+    y += 5;
 
-    const c20 = Number(data.container20) || 0;
-    const c40 = Number(data.container40) || 0;
     autoTable(doc, {
+      ...tableBase,
       startY: y,
-      head: [['Item', '20ft Rate', '20ft Qty', '20ft Total', '40ft Rate', '40ft Qty', '40ft Total']],
+      head: [['Item', '20ft Rate', 'Qty', 'Total', '40ft Rate', 'Qty', 'Total']],
       body: [
-        ['Clearing', '75,000.00', String(c20), N2(c.clearing20Total), '95,000.00', String(c40), N2(c.clearing40Total)],
-        ['Terminal Rent', '145,000.00', String(c20), N2(c.terminal20Total), '225,000.00', String(c40), N2(c.terminal40Total)],
-        ['Shipping Demurrage', '155,000.00', String(c20), N2(c.shipping20Total), '275,000.00', String(c40), N2(c.shipping40Total)],
-        ['Local Transport', '500,000.00', String(c20), N2(c.transport20Total), '600,000.00', String(c40), N2(c.transport40Total)],
+        ['Clearing', N2(r.clearing20), String(q(cq.clearing20Qty)), N2(c.clearing20Total), N2(r.clearing40), String(q(cq.clearing40Qty)), N2(c.clearing40Total)],
+        ['Terminal Rent', N2(r.terminal20), String(q(cq.terminal20Qty)), N2(c.terminal20Total), N2(r.terminal40), String(q(cq.terminal40Qty)), N2(c.terminal40Total)],
+        ['Shipping Demurrage', N2(r.shipping20), String(q(cq.shipping20Qty)), N2(c.shipping20Total), N2(r.shipping40), String(q(cq.shipping40Qty)), N2(c.shipping40Total)],
+        ['Local Transport', N2(r.transport20), String(q(cq.transport20Qty)), N2(c.transport20Total), N2(r.transport40), String(q(cq.transport40Qty)), N2(c.transport40Total)],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
-      bodyStyles: { fontSize: 8 },
+      headStyles: { ...tableBase.headStyles, fontSize: 7 },
+      bodyStyles: { ...tableBase.bodyStyles, fontSize: 7 },
       columnStyles: {
         1: { halign: 'right' },
         3: { halign: 'right' },
         4: { halign: 'right' },
         6: { halign: 'right' },
       },
-      margin: { left: 14, right: 14 },
     });
     y = getTableEndY(y) + 4;
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.text('Truck Demurrage: ' + N2(Number(data.truckDemurrage) || 0) + ' ₦', 14, y);
-    y += 5;
-    doc.setFont('helvetica', 'bold');
-    doc.text('Total Clearing: ' + N2(c.totalClearing) + ' ₦', 14, y);
-    y += 8;
-
-    // ----- Disbursement, GMT, Subtotal, Maintenance, Totals -----
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(...this.primaryColor);
-    doc.text('10–16. Disbursement to VAT', 14, y);
+    doc.setFontSize(8);
+    doc.setTextColor(...COLORS.textMuted);
+    doc.text('Truck Demurrage: ' + N2(Number(data.truckDemurrage) || 0) + ' NGN', margin, y);
+    doc.text('Total Clearing: ' + N2(c.totalClearing) + ' NGN', colRight, y, { align: 'right' });
     y += 6;
 
+    const sonVal = Number(data.sonCharges ?? c.sonCharges ?? 0) || 0;
+    const nafdacVal = Number(data.nafdacCharges ?? c.nafdacCharges ?? 0) || 0;
+    doc.text('SON: ' + (sonVal > 0 ? N2(sonVal) + ' NGN' : '—') + ' (To be invoiced as per receipts)', margin, y);
+    y += 4;
+    doc.text('NAFDAC: ' + (nafdacVal > 0 ? N2(nafdacVal) + ' NGN' : '—') + ' (To be invoiced as per receipts)', margin, y);
+    y += 6;
+
+    // ----- Disbursement & VAT -----
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...COLORS.accent);
+    doc.text('Disbursement & VAT', margin, y);
+    y += 5;
+
     autoTable(doc, {
+      ...tableBase,
       startY: y,
-      head: [['Description', 'Amount (₦)']],
+      head: [['Description', 'Amount (NGN)']],
       body: [
         ['Disbursement', N2(c.disbursement)],
         ['GMT Management Fee', N2(c.gmtFee)],
-        ['Sub Total', N2(c.subtotal)],
+        ['Subtotal', N2(c.subtotal)],
         ['Maintenance', N2(c.maintenance)],
         ['Total Before VAT', N2(c.totalBeforeVat)],
         ['Interest', N2(c.interest)],
         ['VAT on Total', N2(c.vatOnTotal)],
       ],
-      theme: 'grid',
-      headStyles: { fillColor: this.primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
       columnStyles: { 1: { halign: 'right' } },
-      margin: { left: 14, right: 14 },
     });
     y = getTableEndY(y) + 8;
 
-    // ----- Final quote (highlighted) -----
-    doc.setFillColor(...this.lightGray);
-    doc.rect(14, y - 2, pageW - 28, 14, 'F');
-    doc.setDrawColor(...this.primaryColor);
-    doc.setLineWidth(0.5);
-    doc.rect(14, y - 2, pageW - 28, 14);
+    // ----- Total quote (prominent) -----
+    const totalBoxH = 14;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(margin, y, pageW - margin * 2, totalBoxH, 'FD');
+    doc.setDrawColor(...COLORS.border);
+    doc.setLineWidth(0.3);
+    doc.rect(margin, y, pageW - margin * 2, totalBoxH, 'S');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
-    doc.setTextColor(...this.primaryColor);
-    doc.text('Total Quote Value (Excl. Ex-Works)', 20, y + 4);
-    doc.text(N2(c.finalQuote) + ' ₦', pageW - 20, y + 4, { align: 'right' });
-    y += 16;
+    doc.setTextColor(...COLORS.text);
+    doc.text('Total Quote Value (Excl. Ex-Works)', margin + 4, y + 8);
+    doc.text(N2(c.finalQuote) + ' NGN', colRight - 4, y + 8, { align: 'right' });
+    y += totalBoxH + 8;
 
     // ----- Footer -----
+    if (y > pageH - 25) {
+      doc.addPage();
+      y = 15;
+    }
+    doc.setDrawColor(...COLORS.border);
+    doc.setLineWidth(0.1);
+    doc.line(margin, y, colRight, y);
+    y += 4;
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(120, 120, 120);
-    doc.text(
-      'This quotation is valid as per terms. Rates subject to change. All amounts in Nigerian Naira (₦) unless stated.',
-      14,
-      y + 4
-    );
-    doc.text('Generated on ' + new Date().toLocaleString(), pageW / 2, y + 8, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(...COLORS.textMuted);
+    const terms = 'Valid as per terms. Rates subject to change. Amounts in Nigerian Naira (NGN) unless stated.';
+    doc.text(terms, margin, y, { maxWidth: pageW - margin * 2 });
+    doc.text('Generated ' + new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), colRight, y + 4, { align: 'right' });
 
     doc.save(filename);
   }
