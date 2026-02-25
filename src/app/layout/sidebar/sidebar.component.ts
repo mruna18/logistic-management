@@ -34,6 +34,7 @@ export class SidebarComponent {
   menuItems: SidebarItem[] = [
     { path: '/dashboard', label: 'Control Tower', icon: 'chart' },
     { path: '/import-orders', label: 'Orders', icon: 'box' },
+    { path: '/quote', label: 'Quotation', icon: 'file' },
     { path: '/shipments', label: 'Shipments', icon: 'ship' },
     { path: '/containers', label: 'Containers', icon: 'clipboard' },
     { path: '/clearance', label: 'Clearance', icon: 'check' },

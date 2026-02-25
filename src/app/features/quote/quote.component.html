@@ -1,0 +1,240 @@
+<div class="quote-page">
+  <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <h4 class="mb-0">Logistics Quotation</h4>
+    <div>
+      <button type="button" class="btn btn-outline-secondary btn-sm me-2" (click)="back()">Back</button>
+      <button type="button" class="btn btn-primary btn-sm" (click)="downloadPdf()">Download PDF</button>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="quote-form print-area">
+    <!-- Header block for PDF -->
+    <header class="quote-header">
+      <h1 class="quote-title">QUOTE</h1>
+      @if (clientName || orderRef) {
+        <div class="quote-meta">
+          @if (clientName) {
+            <p class="mb-0"><strong>Client:</strong> {{ clientName }}</p>
+          }
+          @if (orderRef) {
+            <p class="mb-0"><strong>Our ref:</strong> {{ orderRef }}</p>
+          }
+          <p class="mb-0"><strong>Date:</strong> {{ today | date:'dd-MMM-yy' }}</p>
+        </div>
+      }
+    </header>
+
+    <!-- 1) GENERAL INFORMATION -->
+    <section class="quote-section">
+      <h2 class="section-title">1. General Information</h2>
+      <div class="quote-grid">
+        <div class="field"><label>Supplier</label><input type="text" class="form-control form-control-sm" formControlName="supplier"></div>
+        <div class="field"><label>Country</label><input type="text" class="form-control form-control-sm" formControlName="country"></div>
+        <div class="field"><label>Products</label><input type="text" class="form-control form-control-sm" formControlName="products"></div>
+        <div class="field"><label>Quantity</label><input type="number" min="0" class="form-control form-control-sm" formControlName="quantity"></div>
+        <div class="field"><label>Duty Rate (%)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="dutyRate"></div>
+        <div class="field highlight-input"><label>Exchange Rate (N/$)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="exchangeRate"></div>
+        <div class="field"><label>Ex. rate for duty (N/$)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="exchangeRateForDuty" placeholder="Optional: duty box rate"></div>
+        <div class="field"><label>CIF for duty (₦)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm text-end" formControlName="cifForDutyOverride" placeholder="Optional: from duty box"></div>
+      </div>
+    </section>
+
+    <!-- 2) USD COSTING -->
+    <section class="quote-section">
+      <h2 class="section-title">2. USD Costing</h2>
+      <div class="quote-grid">
+        <div class="field"><label>Ex Works (USD)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm text-end" formControlName="exWorks"></div>
+        <div class="field"><label>FOB Charges (USD)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm text-end" formControlName="fobCharges"></div>
+        <div class="field"><label>Freight (USD)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm text-end" formControlName="freight"></div>
+        <div class="field total"><label>Total FOB (USD)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('totalFOB')?.value)"></div>
+        <div class="field total"><label>Total C&amp;F (USD)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('totalCNF')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 3) NAIRA CONVERSION -->
+    <section class="quote-section">
+      <h2 class="section-title">3. Naira Conversion</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>CNF Naira (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('cnfNaira')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 4) INSURANCE -->
+    <section class="quote-section">
+      <h2 class="section-title">4. Insurance</h2>
+      <div class="quote-grid">
+        <div class="field"><label>Insurance Rate (%)</label><input type="number" step="0.01" class="form-control form-control-sm" formControlName="insuranceRate"></div>
+        <div class="field"><label>Insured Percent (%)</label><input type="number" min="0" class="form-control form-control-sm" formControlName="insuredPercent"></div>
+        <div class="field total"><label>Insurance (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('insurance')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 5) CIF -->
+    <section class="quote-section">
+      <h2 class="section-title">5. CIF</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>CIF Naira (&#8358;)</label><input type="text" class="form-control form-control-sm text-end fw-bold" readonly [value]="formatNum(form.get('cif')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 6) LC COMMISSION -->
+    <section class="quote-section">
+      <h2 class="section-title">6. LC Commission</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>LC Commission Local (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('lcLocal')?.value)"></div>
+        <div class="field total"><label>LC Commission Offshore (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('lcOffshore')?.value)"></div>
+        <div class="field"><label>Telex / Form M Charges (&#8358;)</label><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="telexCharges"></div>
+      </div>
+    </section>
+
+    <!-- 7) FINANCE -->
+    <section class="quote-section">
+      <h2 class="section-title">7. Finance</h2>
+      <div class="quote-grid">
+        <div class="field"><label>Finance Rate (%)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="financeRate"></div>
+        <div class="field"><label>Finance Days</label><input type="number" min="0" class="form-control form-control-sm" formControlName="financeDays"></div>
+        <div class="field"><label>Finance Mgmt Rate (%)</label><input type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="financeManagementRate" title="CIF Naira × rate %"></div>
+        <div class="field total"><label>Finance Management (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('financeManagement')?.value)"></div>
+        <div class="field total"><label>Finance Cost (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('financeCost')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 8) CUSTOMS CHARGES -->
+    <section class="quote-section">
+      <h2 class="section-title">8. Customs Charges</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>Duty (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('duty')?.value)"></div>
+        <div class="field total"><label>Special Levy (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('specialLevy')?.value)"></div>
+        <div class="field total"><label>Port Levy (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('portLevy')?.value)"></div>
+        <div class="field total"><label>FCS / CISS (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('fcs')?.value)"></div>
+        <div class="field total"><label>TLS (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('tls')?.value)"></div>
+        <div class="field total"><label>VAT on Duty (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('vatOnDuty')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 9) CONTAINER SECTION -->
+    <section class="quote-section">
+      <h2 class="section-title">9. Container Section</h2>
+      <div class="quote-grid">
+        <div class="field"><label>20ft Count</label><input type="number" min="0" class="form-control form-control-sm" formControlName="container20"></div>
+        <div class="field"><label>40ft Count</label><input type="number" min="0" class="form-control form-control-sm" formControlName="container40"></div>
+      </div>
+      <div class="container-table">
+        <table class="table table-sm table-bordered mb-2">
+          <thead>
+            <tr><th>Item</th><th>20ft Rate (&#8358;)</th><th>20ft Count</th><th>20ft Total</th><th>40ft Rate (&#8358;)</th><th>40ft Count</th><th>40ft Total</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Clearing</td>
+              <td>{{ containerRates.clearing20 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('clearing20Total')?.value | number:'1.2-2' }}</td>
+              <td>{{ containerRates.clearing40 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('clearing40Total')?.value | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td>Terminal Rent</td>
+              <td>{{ containerRates.terminal20 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('terminal20Total')?.value | number:'1.2-2' }}</td>
+              <td>{{ containerRates.terminal40 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('terminal40Total')?.value | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td>Shipping Demurrage</td>
+              <td>{{ containerRates.shipping20 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('shipping20Total')?.value | number:'1.2-2' }}</td>
+              <td>{{ containerRates.shipping40 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('shipping40Total')?.value | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td>Local Transport</td>
+              <td>{{ containerRates.transport20 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container20')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('transport20Total')?.value | number:'1.2-2' }}</td>
+              <td>{{ containerRates.transport40 | number:'1.2-2' }}</td>
+              <td>{{ form.get('container40')?.value || 0 }}</td>
+              <td class="text-end">{{ form.get('transport40Total')?.value | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="quote-grid">
+        <div class="field"><label>Truck Demurrage (&#8358;)</label><input type="number" min="0" class="form-control form-control-sm text-end" formControlName="truckDemurrage"></div>
+        <div class="field total"><label>Total Clearing (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('totalClearing')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 10) DISBURSEMENT -->
+    <section class="quote-section">
+      <h2 class="section-title">10. Disbursement</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>Disbursement (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('disbursement')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 11) GMT MANAGEMENT -->
+    <section class="quote-section">
+      <h2 class="section-title">11. GMT Management</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>GMT Management Fee (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('gmtFee')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 12) SUBTOTAL -->
+    <section class="quote-section">
+      <h2 class="section-title">12. Subtotal</h2>
+      <div class="quote-grid">
+        <div class="field total highlight-total"><label>Sub Total (&#8358;)</label><input type="text" class="form-control form-control-sm text-end fw-bold" readonly [value]="formatNum(form.get('subtotal')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 13) MAINTENANCE -->
+    <section class="quote-section">
+      <h2 class="section-title">13. Maintenance</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>Maintenance (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('maintenance')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 14) TOTAL BEFORE VAT -->
+    <section class="quote-section">
+      <h2 class="section-title">14. Total Before VAT</h2>
+      <div class="quote-grid">
+        <div class="field total highlight-total"><label>Total Before VAT (&#8358;)</label><input type="text" class="form-control form-control-sm text-end fw-bold" readonly [value]="formatNum(form.get('totalBeforeVat')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 15) INTEREST -->
+    <section class="quote-section">
+      <h2 class="section-title">15. Interest</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>Interest (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('interest')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 16) VAT ON TOTAL -->
+    <section class="quote-section">
+      <h2 class="section-title">16. VAT on Total</h2>
+      <div class="quote-grid">
+        <div class="field total"><label>VAT on Total (&#8358;)</label><input type="text" class="form-control form-control-sm text-end" readonly [value]="formatNum(form.get('vatOnTotal')?.value)"></div>
+      </div>
+    </section>
+
+    <!-- 17) FINAL QUOTE -->
+    <section class="quote-section final-quote-section">
+      <h2 class="section-title">17. Final Quote</h2>
+      <div class="quote-grid">
+        <div class="field final-quote">
+          <label>Total Quote Value Excl. Ex-Works (&#8358;)</label>
+          <input type="text" class="form-control form-control-lg text-end fw-bold final-quote-input" readonly [value]="formatNum(form.get('finalQuote')?.value)">
+        </div>
+      </div>
+    </section>
+  </form>
+</div>
